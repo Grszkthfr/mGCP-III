@@ -1,0 +1,10 @@
+
+*.png
+
+*.pyc
+
+*.html
+
+.Rproj.user
+
+.Rhistory
