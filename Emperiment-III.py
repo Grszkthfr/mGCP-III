@@ -297,16 +297,16 @@ def MakeTrialList3(path):
                 number_of_cues += temporaryTrialList[i][2].count('left')
 
                 #left_cue: yes, target_E: yes, target_left: yes, number_of_cues: 3
-                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_left', str('cue_' + number_of_cues)
+                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_left', 'cue_' + str(number_of_cues)
 
                 # left_cue: yes, target_E: yes, target_left: no, number_of_cues: 3
-                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_right', str('cue_' + number_of_cues)  
+                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_right', 'cue_' + str(number_of_cues)  
 
                 # left_cue: yes, target_E: no, target_left: yes, number_of_cues: 3
-                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_left', str('cue_' + number_of_cues)  
+                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_left', 'cue_' + str(number_of_cues)  
 
                 # left_cue: yes, target_E: no, target_left: no, number_of_cues: 3
-                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_right', str('cue_' + number_of_cues)  
+                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_right', 'cue_' + str(number_of_cues)  
 
                 if number_of_cues == 3:  # without there would only 96 trials (against 288 in the other conditions)
                     trialList3.append(x1)
@@ -322,13 +322,13 @@ def MakeTrialList3(path):
                 number_of_cues += temporaryTrialList[i][2].count('right')
 
                 # left_cue: no, target_E: yes, target_left: yes, number_of_cues: 3 
-                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_left', str('cue_' + number_of_cues) 
+                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_left', 'cue_' + str(number_of_cues) 
 
-                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_right', str('cue_' + number_of_cues)
+                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_right', 'cue_' + str(number_of_cues)
 
-                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_left', str('cue_' + number_of_cues)
+                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_left', 'cue_' + str(number_of_cues)
 
-                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_right', str('cue_' + number_of_cues)
+                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_right', 'cue_' + str(number_of_cues)
 
                 if number_of_cues == 3:  # without there would only 96 trials (against 288 in the other conditions)
                     trialList3.append(x1)
@@ -357,7 +357,7 @@ def MakeTrialList3(path):
     testCueLeft3 = 0
     testCueRight3 = 0
     for i in range(len(trialList3)):
-        if trialList3[i][4] == 'cue_left':
+        if trialList3[i][3] == 'cue_left':
             testCueLeft3 += 1
         else:
             testCueRight3 += 1
@@ -436,7 +436,7 @@ def MakeTrialList1(path):
     testTarLeft1 = 0
     testTarRight1 = 0
     for i in range(len(trialList1)):
-        if trialList1[i][5] == '1':
+        if trialList1[i][5] == 'target_left':
             testTarLeft1 += 1
         else:
             testTarRight1 += 1
@@ -445,7 +445,7 @@ def MakeTrialList1(path):
     testCueLeft1 = 0
     testCueRight1 = 0
     for i in range(len(trialList1)):
-        if trialList1[i][4] == '1':
+        if trialList1[i][3] == 'cue_left':
             testCueLeft1 += 1
         else:
             testCueRight1 += 1
