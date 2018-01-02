@@ -146,7 +146,7 @@ def showText(window, myText):
             core.quit()
 
             #RICHTIG wäre: 0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: congruency, 7: number_of_cues
-def showTrial(left_face, top_face, right_face, left, target, congruency, targetPos, number_of_cues):  
+def showTrial(left_face, top_face, right_face, left, target, targetPos, congruency, number_of_cues):  
 
     # Preparation
     FixationCross = visual.TextStim(window, text=u"+", font='Arial', pos=[0, 0], height=30, units=u'pix', color='white')
@@ -285,7 +285,7 @@ def MakeTrialList3(path):
         x = ','.join(map(str, temporaryTrialList[i]))
         #print x
 
-        # Exclude, two different directional cues in a single trial, and single faces appearing multiple times
+        # Exclude, two different directional cues in a single trial
         if not ('left' in x and 'right' in x):
 
             # coding trials
@@ -296,17 +296,17 @@ def MakeTrialList3(path):
                 number_of_cues += temporaryTrialList[i][1].count('left')
                 number_of_cues += temporaryTrialList[i][2].count('left')
 
-                #left_cue: yes, target_E: yes, target_left: yes, congruency: yes, number_of_cues: 3
-                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '1', '1', '1', '1', str(number_of_cues)
+                #left_cue: yes, target_E: yes, target_left: yes, number_of_cues: 3
+                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_left', str('cue_' + number_of_cues)
 
-                # left_cue: yes, target_E: yes, target_left: no, congruency: no, number_of_cues: 3
-                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '1', '1', '0', '0', str(number_of_cues)  
+                # left_cue: yes, target_E: yes, target_left: no, number_of_cues: 3
+                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_right', str('cue_' + number_of_cues)  
 
-                # left_cue: yes, target_E: no, target_left: yes, congruency: yes, number_of_cues: 3
-                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '1', '0', '1', '1', str(number_of_cues)  
+                # left_cue: yes, target_E: no, target_left: yes, number_of_cues: 3
+                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_left', str('cue_' + number_of_cues)  
 
-                # left_cue: yes, target_E: no, target_left: no, congruency: no, number_of_cues: 3
-                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '1', '0', '0', '0', str(number_of_cues)  
+                # left_cue: yes, target_E: no, target_left: no, number_of_cues: 3
+                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_right', str('cue_' + number_of_cues)  
 
                 if number_of_cues == 3:  # without there would only 96 trials (against 288 in the other conditions)
                     trialList3.append(x1)
@@ -321,14 +321,14 @@ def MakeTrialList3(path):
                 number_of_cues += temporaryTrialList[i][1].count('right')
                 number_of_cues += temporaryTrialList[i][2].count('right')
 
-                # left_cue: no, target_E: yes, target_left: yes, congruency: no, number_of_cues: 3 
-                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '0', '1', '1', '0', str(number_of_cues) 
+                # left_cue: no, target_E: yes, target_left: yes, number_of_cues: 3 
+                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_left', str('cue_' + number_of_cues) 
 
-                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '0', '1', '0', '1', str(number_of_cues)
+                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_right', str('cue_' + number_of_cues)
 
-                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '0', '0', '1', '0', str(number_of_cues)
+                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_left', str('cue_' + number_of_cues)
 
-                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '0', '0', '0', '1', str(number_of_cues)
+                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_right', str('cue_' + number_of_cues)
 
                 if number_of_cues == 3:  # without there would only 96 trials (against 288 in the other conditions)
                     trialList3.append(x1)
@@ -339,25 +339,16 @@ def MakeTrialList3(path):
     # Check number of Trials
     testCues3 = 0
     for i in range(len(trialList3)):
-        if trialList3[i][7] == '3':
+        if trialList3[i][6] == 'cue_3':
             testCues3 += 1
         else:
             print "WTF @ testCues3?!"
 
     # Check number of Trials
-    testCong3 = 0
-    testIncong3 = 0
-    for i in range(len(trialList3)):
-        if trialList3[i][6] == '1':
-            testCong3 += 1
-        else:
-            testIncong3 += 1
-
-    # Check number of Trials
     testTarLeft3 = 0
     testTarRight3 = 0
     for i in range(len(trialList3)):
-        if trialList3[i][5] == '1':
+        if trialList3[i][5] == 'target_left':
             testTarLeft3 += 1
         else:
             testTarRight3 += 1
@@ -366,13 +357,12 @@ def MakeTrialList3(path):
     testCueLeft3 = 0
     testCueRight3 = 0
     for i in range(len(trialList3)):
-        if trialList3[i][4] == '1':
+        if trialList3[i][4] == 'cue_left':
             testCueLeft3 += 1
         else:
             testCueRight3 += 1
 
     print '3 Trials with three gaze cue: ', testCues3, ' of 48 trials'
-    print '3 Trials with congruent trials: ', testCong3, ' of 24 congruent trials , ', testIncong3, ' of 24 incongruent trials.'
     print '3 Trials with target left: ', testTarLeft3, ' of 24 target-left trials, ', testTarRight3, ' of 24 target-right trials.'
     print '3 Trials with cue left: ', testCueLeft3, ' of 24 cue-left trials, ', testCueRight3, ' of 24 cue-right trials.'
 
@@ -391,17 +381,17 @@ def MakeTrialList1(path):
         # coding trials
         if 'left' in x:
 
-            #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: congruency: yes, 7: number_of_cues: 1
-            x1 = '99', temporaryTrialList[i][0], '99', '1', '1', '1', '1', '1'
+            #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: number_of_cues: 1
+            x1 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_E', 'target_left', 'cue_1'
 
-            # left_cue: yes, target_E: yes, target_left: no, congruency: no, number_of_cues: 1
-            x2 = '99', temporaryTrialList[i][0], '99', '1', '1', '0', '0', '1'  
+            # left_cue: yes, target_E: yes, target_left: no, number_of_cues: 1
+            x2 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_E', 'target_right', 'cue_1'  
 
-            # left_cue: yes, target_E: no, target_left: yes, congruency: yes, number_of_cues: 1
-            x3 = '99', temporaryTrialList[i][0], '99', '1', '0', '1', '1', '1'  
+            # left_cue: yes, target_E: no, target_left: yes, number_of_cues: 1
+            x3 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_F', 'target_left', 'cue_1'  
 
-            # left_cue: yes, target_E: no, target_left: no, congruency: no, number_of_cues: 1
-            x4 = '99', temporaryTrialList[i][0], '99', '1', '0', '0', '0', '1'  
+            # left_cue: yes, target_E: no, target_left: no, number_of_cues: 1
+            x4 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_F', 'target_right', 'cue_1'  
 
             trialList1.append(x1)
             trialList1.append(x2)
@@ -415,14 +405,14 @@ def MakeTrialList1(path):
 
         elif 'right' in x:
 
-            # left_cue: no, target_E: yes, target_left: yes, congruency: no, number_of_cues: 3 
-            x1 = '99',temporaryTrialList[i][0],  '99', '0', '1', '1', '0', '1'
+            # left_cue: no, target_E: yes, target_left: yes, number_of_cues: 1 
+            x1 = '99',temporaryTrialList[i][0],  '99', 'cue_right', 'target_E', 'target_left', 'cue_1'
 
-            x2 = '99', temporaryTrialList[i][0], '99', '0', '1', '0', '1', '1'
+            x2 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_E', 'target_right', 'cue_1'
 
-            x3 = '99', temporaryTrialList[i][0], '99', '0', '0', '1', '0', '1'
+            x3 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_F', 'target_left', 'cue_1'
 
-            x4 = '99', temporaryTrialList[i][0], '99', '0', '0', '0', '1', '1'
+            x4 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_F', 'target_right', 'cue_1'
 
             trialList1.append(x1)
             trialList1.append(x2)
@@ -437,21 +427,10 @@ def MakeTrialList1(path):
     # Check number of Trials                
     testCues1 = 0
     for i in range(len(trialList1)):
-        if trialList1[i][7] == '1':
+        if trialList1[i][6] == 'cue_1':
             testCues1 += 1
         else:
-            print "WTF @ testCues1?!"
-            
-
-    # Check number of Trials                
-    testCong1 = 0
-    testIncong1 = 0
-    for i in range(len(trialList1)):
-        if trialList1[i][6] == '1':
-            testCong1 += 1
-        else:
-            testIncong1 += 1
-            
+            print "WTF @ testCues1?!"            
 
     # Check number of Trials                
     testTarLeft1 = 0
@@ -472,7 +451,6 @@ def MakeTrialList1(path):
             testCueRight1 += 1
 
     print '1 Trials with one gaze cue: ', testCues1, ' of 48 trials.'
-    print '1 Trials with congruent trials: ', testCong1, ' of 24 congruent trials , ', testIncong1, ' of 24 incongruent trials.'
     print '1 Trials with target left: ', testTarLeft1, ' of 24 target-left trials, ', testTarRight1, ' of 24 target-right trials.'
     print '1 Trials with cue left: ', testCueLeft1, ' of 24 cue-left trials, ', testCueRight1, ' of 24 cue-right trials.'
 
@@ -487,16 +465,16 @@ def TrialFromTrialListPicker(i):
 
         if blockCounter == 1:
             #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: congruency: yes, 7: number_of_cues: 1
-            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6], trialList3[i][7])
+            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6])
         
         elif blockCounter == 2:
-            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6], trialList1[i][7])
+            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6])
         
         elif blockCounter == 3:
-            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6], trialList3[i][7])
+            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6])
         
         elif blockCounter == 4:
-            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6], trialList1[i][7])
+            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6])
 
         else:
             print "Error no triallist picked for odd subject id"
@@ -506,16 +484,16 @@ def TrialFromTrialListPicker(i):
         if blockCounter == 1:
 
             #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: congruency: yes, 7: number_of_cues: 1
-            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6], trialList1[i][7])
+            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6])
 
         elif blockCounter == 2:
-            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6], trialList3[i][7])
+            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6])
 
         elif blockCounter == 3:
-            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6], trialList1[i][7])
+            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6])
 
         elif blockCounter == 4:
-            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6], trialList3[i][7])
+            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6])
         else:
             print "Error no triallist picked for even subject id"
     else:
