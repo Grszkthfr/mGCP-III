@@ -327,8 +327,8 @@ def MakeTrialList3(path):
                 x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '0', '1', '0', '1', str(number_of_cues)
 
                 x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '0', '0', '1', '0', str(number_of_cues)
-###FEHLER:
-                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '0', '0', '0', '0', str(number_of_cues)
+
+                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], '0', '0', '0', '1', str(number_of_cues)
 
                 if number_of_cues == 3:  # without there would only 96 trials (against 288 in the other conditions)
                     trialList3.append(x1)
@@ -421,8 +421,8 @@ def MakeTrialList1(path):
             x2 = '99', temporaryTrialList[i][0], '99', '0', '1', '0', '1', '1'
 
             x3 = '99', temporaryTrialList[i][0], '99', '0', '0', '1', '0', '1'
-###FEHLER:
-            x4 = '99', temporaryTrialList[i][0], '99', '0', '0', '0', '0', '1'
+
+            x4 = '99', temporaryTrialList[i][0], '99', '0', '0', '0', '1', '1'
 
             trialList1.append(x1)
             trialList1.append(x2)
@@ -528,12 +528,14 @@ def Block(trials1, trials3, randomize=True):
     while blockCounter <= 4:
         
         if len(trials1) == len(trials3):
-            #for i in [1,2,3,4]: #for testing
-            for i in range(len(trials1)):  # for each trial, go to trialPicker, add +1 for Trialcounter
-                if (randomize):
+            
+            if (randomize): #randomize triallist once per subject
                     random.shuffle(trials1)
                     random.shuffle(trials3)
-                                        
+
+            #for i in [1,2,3,4]: #for testing
+            for i in range(len(trials1)):  # for each trial, go to trialPicker, add +1 for Trialcounter
+                                                        
                 TrialFromTrialListPicker(i)  # run trial i
                 print '> trialCounter: ', trialCounter
                 trialCounter += 1
