@@ -12,7 +12,9 @@ from psychopy import visual, core, event, gui  # PsychoPy Libraries (5/20)
 
 experimentName = "mGCP-III"
 
-eveText = ""
+
+eveText = "" # a blank screen for giving informend consent
+
 welcomeText = u"Herzlich Willkommen!\n\nVielen Dank, dass Sie heute an unserem Versuch zur Aufmerksamkeitsverteilung teilnehmen. Sie helfen uns damit sehr weiter, denn Sie sind ein wichtiger Teil unserer Studie.\nBitte bearbeiten Sie den Versuch so konzentriert und gewissenhaft wie möglich.\n\n\n\t\t\t\t\t\tWeiter mit der <Leertaste>"
 
 instructionText1 = u"Der Versuch besteht aus vier Durchgängen á vier Minuten. Zwischendurch gibt es kleine Pausen.\n\nZuerst legen Sie bitte den Zeigefinger und den Mittelfinger Ihrer dominanten Hand auf die markierten Tasten der Tastatur.\n\nLassen Sie die Finger für die Dauer des Versuchs dort.\n\n\n\t\t\t\t\t\tWeiter mit der <Leertaste>"
@@ -46,10 +48,10 @@ quitKey = "q" # exit key for experiment at any given time
 
 cueDirectory = 'stimuli' + os.path.sep + 'cues'
 trialList3 = []
+trialList1 = []
+
 ##to do:
 trialDict3 = {'pic_left': '', 'pic_top': '', 'pic_right': '', 'cue_direction': '', 'target_identity': '', 'target_direction': '', 'cue_number': ''}
-trialList1 = []
-##to do:
 trialDict1 = {'pic_left': '', 'pic_top': '', 'pic_right': '', 'cue_direction': '', 'target_identity': '', 'target_direction': '', 'cue_number': ''}
 
 trialCounter = 1  # trial counter starting at 1
@@ -358,6 +360,15 @@ def MakeTrialList3(path):
         else:
             testTarRight3 += 1
 
+# Check number of Trials                
+    testTarF3 = 0
+    testTarE3 = 0
+    for i in range(len(trialList3)):
+        if trialList3[i][4] == 'target_F':
+            testTarF3 += 1
+        else:
+            testTarE3 += 1
+
     # Check number of Trials
     testCueLeft3 = 0
     testCueRight3 = 0
@@ -367,9 +378,10 @@ def MakeTrialList3(path):
         else:
             testCueRight3 += 1
 
-    print '3 Trials with three gaze cue: ', testCues3, ' of 48 trials'
-    print '3 Trials with target left: ', testTarLeft3, ' of 24 target-left trials, ', testTarRight3, ' of 24 target-right trials.'
-    print '3 Trials with cue left: ', testCueLeft3, ' of 24 cue-left trials, ', testCueRight3, ' of 24 cue-right trials.'
+    print 'Trials with one gaze cue: ', testCues3, ' of 48 trials.'
+    print 'Trials with target position: ', testTarLeft3, ' of 24 target-left trials, ', testTarRight3, ' of 24 target-right trials.'
+    print 'Trials with target identity: ', testTarF3, ' of 24 target-F trials, ', testTarE3, ' of 24 target-E trials.'
+    print 'Trials with cue direction: ', testCueLeft3, ' of 24 cue-left trials, ', testCueRight3, ' of 24 cue-right trials.'
 
     return trialList3
 
@@ -445,6 +457,15 @@ def MakeTrialList1(path):
             testTarLeft1 += 1
         else:
             testTarRight1 += 1
+            
+# Check number of Trials                
+    testTarF1 = 0
+    testTarE1 = 0
+    for i in range(len(trialList1)):
+        if trialList1[i][4] == 'target_F':
+            testTarF1 += 1
+        else:
+            testTarE1 += 1
 
     # Check number of Trials                
     testCueLeft1 = 0
@@ -455,9 +476,10 @@ def MakeTrialList1(path):
         else:
             testCueRight1 += 1
 
-    print '1 Trials with one gaze cue: ', testCues1, ' of 48 trials.'
-    print '1 Trials with target left: ', testTarLeft1, ' of 24 target-left trials, ', testTarRight1, ' of 24 target-right trials.'
-    print '1 Trials with cue left: ', testCueLeft1, ' of 24 cue-left trials, ', testCueRight1, ' of 24 cue-right trials.'
+    print 'Trials with one gaze cue: ', testCues1, ' of 48 trials.'
+    print 'Trials with target position: ', testTarLeft1, ' of 24 target-left trials, ', testTarRight1, ' of 24 target-right trials.'
+    print 'Trials with target identity: ', testTarF1, ' of 24 target-F trials, ', testTarE1, ' of 24 target-E trials.'
+    print 'Trials with cue direction: ', testCueLeft1, ' of 24 cue-left trials, ', testCueRight1, ' of 24 cue-right trials.'
 
 
     return trialList1
