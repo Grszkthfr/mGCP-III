@@ -10,7 +10,7 @@ from psychopy import visual, core, event, gui  # PsychoPy Libraries (5/20)
 ### Setup
 ### Experiment text modules
 
-experimentName = "mGCP-II"
+experimentName = "mGCP-III"
 
 eveText = ""
 welcomeText = u"Herzlich Willkommen!\n\nVielen Dank, dass Sie heute an unserem Versuch zur Aufmerksamkeitsverteilung teilnehmen. Sie helfen uns damit sehr weiter, denn Sie sind ein wichtiger Teil unserer Studie.\nBitte bearbeiten Sie den Versuch so konzentriert und gewissenhaft wie möglich.\n\n\n\t\t\t\t\t\tWeiter mit der <Leertaste>"
