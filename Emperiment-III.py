@@ -46,7 +46,10 @@ quitKey = "q" # exit key for experiment at any given time
 
 cueDirectory = 'stimuli' + os.path.sep + 'cues'
 trialList3 = []
+trialDict3 = {'pic_left': '', 'pic_top': '', 'pic_right': '', 'cue_direction': '', 'target_identity': '', 'target_direction': '', 'cue_number': ''}
 trialList1 = []
+trialDict1 = {'pic_left': '', 'pic_top': '', 'pic_right': '', 'cue_direction': '', 'target_identity': '', 'target_direction': '', 'cue_number': ''}
+
 trialCounter = 1  # trial counter starting at 1
 blockCounter = 1 # block counter starting at 1
 
