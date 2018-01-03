@@ -105,8 +105,8 @@ def fillList(path):
             faceList.append(os.path.join(path, file))  # If the file is an image file, add its relative path STARTING IN THE WORKING DIRECTORY to list of targets
     return faceList
 
-            #RICHTIG: 0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: congruency, 7: number_of_cues
-def writeTrialToFile(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum, correct, RT):
+            #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: number_of_cues, 7: correctResponse, 8: RT
+def writeTrialToFile(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum, correctResponse, RT):
     # check if file and folder already exist
     if not os.path.isdir('data/raw'):
         os.makedirs('data/raw')  # if this fails (e.g. permissions) you will get an error
@@ -116,10 +116,10 @@ def writeTrialToFile(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, 
     with open(fileName, 'ab') as saveFile:  # 'a' = append; 'w' = writing; 'b' = in binary mode
         fileWriter = csv.writer(saveFile, delimiter=',')  # generate fileWriter
         if os.stat(fileName).st_size == 0:  # if file is empty, insert header
-            fileWriter.writerow(('expName', 'subject', 'date', 'block', 'trial', 'left_face', 'top_face', 'right_face', 'left_cue', 'target_E', 'target_left', 'congruency', 'number_of_cues', 'correct_response', 'rt'))
+            fileWriter.writerow(('experiment', 'subject', 'date', 'block', 'trial', 'face_left', 'face_top', 'face_right', 'cue_dir', 'target_id', 'target_pos', 'cue_num', 'correct_response', 'rt'))
 
         # write trial
-        fileWriter.writerow((experimentName, expInfo['subject'], getTimestampNow(), blockCounter, trialCounter, faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum, correct, RT))
+        fileWriter.writerow((experimentName, expInfo['subject'], getTimestampNow(), blockCounter, trialCounter, faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum, correctResponse, RT))
 
         '''
         print experimentName
@@ -150,7 +150,7 @@ def showText(window, myText):
         if event.getKeys(quitKey):
             core.quit()
 
-            #RICHTIG wäre: 0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: number_of_cues
+            # 0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: number_of_cues
 def showTrial(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum):  
 
     # Preparation
@@ -469,7 +469,7 @@ def TrialFromTrialListPicker(i):
     if float(expInfo['subject']) % 2 == 1:
 
         if blockCounter == 1:
-            #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: congruency: yes, 7: number_of_cues: 1
+            #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: number_of_cues: 1
             return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6])
         
         elif blockCounter == 2:
@@ -488,7 +488,7 @@ def TrialFromTrialListPicker(i):
 
         if blockCounter == 1:
 
-            #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: congruency: yes, 7: number_of_cues: 1
+            #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: number_of_cues: 1
             return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6])
 
         elif blockCounter == 2:
@@ -568,11 +568,11 @@ def writeTriallistToFile(listOfTrials):
     with open(fileName, 'ab') as saveFile: #'a' = append; 'w' = writing; 'b' = in binary mode
         fileWriter = csv.writer(saveFile, delimiter=',')
         if os.stat(fileName).st_size == 0: #if file is empty, insert header
-            fileWriter.writerow(('pic_left', 'pic_top', 'pic_right', 'left_cue', 'target_E', 'target_left', 'congruency', 'number_of_cues')) #1=ja
+            fileWriter.writerow(('pic_left', 'pic_top', 'pic_right', 'cue_dir', 'target_id', 'target_pos', 'cue_num')) #1=ja
         for i in range(len(listOfTrials)):
             fileWriter.writerow(listOfTrials[i])
 
- #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: congruency: yes, 7: number_of_cues: 1
+ #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: number_of_cues
 
 run()
 
