@@ -46,8 +46,10 @@ quitKey = "q" # exit key for experiment at any given time
 
 cueDirectory = 'stimuli' + os.path.sep + 'cues'
 trialList3 = []
+##to do:
 trialDict3 = {'pic_left': '', 'pic_top': '', 'pic_right': '', 'cue_direction': '', 'target_identity': '', 'target_direction': '', 'cue_number': ''}
 trialList1 = []
+##to do:
 trialDict1 = {'pic_left': '', 'pic_top': '', 'pic_right': '', 'cue_direction': '', 'target_identity': '', 'target_direction': '', 'cue_number': ''}
 
 trialCounter = 1  # trial counter starting at 1
@@ -148,38 +150,38 @@ def showText(window, myText):
         if event.getKeys(quitKey):
             core.quit()
 
-            #RICHTIG wäre: 0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: congruency, 7: number_of_cues
-def showTrial(left_face, top_face, right_face, left, target, targetPos, congruency, number_of_cues):  
+            #RICHTIG wäre: 0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: number_of_cues
+def showTrial(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum):  
 
     # Preparation
     FixationCross = visual.TextStim(window, text=u"+", font='Arial', pos=[0, 0], height=30, units=u'pix', color='white')
     SlowWarning = visual.TextStim(window, text=warningText, font='Arial', pos=[0, 0], height=30, units=u'pix', color='white')
 
     # target & position
-    if (target == '1'):  # target E
+    if (targetId == 'target_E'):  # target E
         correctKey = responseKeyE
         wrongKey = responseKeyF
-        if (targetPos == '1'):  # target left
+        if (targetPos == 'target_left'):  # target left
             Target = visual.TextStim(window, text='E', font='Arial', pos=[-.65, 0])
             ##print '1'
-        elif (targetPos == '0'):  # target right
+        elif (targetPos == 'target_rigth'):  # target right
             Target = visual.TextStim(window, text='E', font='Arial', pos=[.65, 0])
             ##print '2'
         else:
             print '>>> Error target E needs to be somewhere!!'
-    elif (target == '0'):  # target F
+    elif (targetId == 'target_F'):  # target F
         correctKey = responseKeyF
         wrongKey = responseKeyE
-        if (targetPos == '1'):  # target left
+        if (targetPos == 'target_left'):  # target left
             Target = visual.TextStim(window, text='F', font='Arial', pos=[-.65, 0])
             ##print '3'
-        elif (targetPos == '0'):  # target right
+        elif (targetPos == 'target_right'):  # target right
             Target = visual.TextStim(window, text='F', font='Arial', pos=[.65, 0])
             ##print '4'
         else:
             print '>>> Error target F needs to be somewhere!'
     else:
-        print '>>> Error, target needs to be something! ' + target
+        print '>>> Error, target needs to be something! ' + targetId
 
     reactionTime = core.Clock()
     FixationCross = visual.TextStim(window, text=u"+", font='Arial', pos=[0, 0], height=30, units=u'pix', color='white')
@@ -188,24 +190,24 @@ def showTrial(left_face, top_face, right_face, left, target, targetPos, congruen
     wait(interTrialIntervall)  # show fixationCross interTrialIntervall-seconds prior to beginning
     FixationCross.draw()
 
-    if (number_of_cues == '3'):
+    if (cueNum == 'cue_3'):
         LeftImage = visual.ImageStim(window, units='cm', size=(75, 100), pos=(-60.622, -35))  # size in mm
         # TopImage = visual.ImageStim(window, units= 'norm', size = (0.28125,0.5), pos = (0, 0.5))
         TopImage = visual.ImageStim(window, units='cm', size=(75, 100), pos=(0, 70))
         RightImage = visual.ImageStim(window, units='cm', size=(75, 100), pos=(60.622, -35))
 
-        LeftImage.setImage(left_face)
+        LeftImage.setImage(faceLeft)
         LeftImage.draw()
 
-        TopImage.setImage(top_face)
+        TopImage.setImage(faceTop)
         TopImage.draw()
 
-        RightImage.setImage(right_face)
+        RightImage.setImage(faceRight)
         RightImage.draw()
 
-    elif (number_of_cues == '1'): 
+    elif (cueNum == 'cue_1'): 
         CentralImage = visual.ImageStim(window, units='cm', size=(75,100),pos=(0, 0))
-        CentralImage.setImage(top_face) # Take top-picture as central cue.
+        CentralImage.setImage(faceTop) # Take top-picture as central cue.
         CentralImage.draw()
 
     else:
@@ -214,14 +216,14 @@ def showTrial(left_face, top_face, right_face, left, target, targetPos, congruen
     window.flip() # draw all faces
     wait(interStimuliIntervall) # wait interStimuliIntervall milliseconds
 
-    if (number_of_cues == '3'):
+    if (cueNum == 'cue_3'):
         LeftImage.draw()
         TopImage.draw()
         RightImage.draw()
         FixationCross.draw() #fixation cross remains visible
 
 
-    elif (number_of_cues == '1'):
+    elif (cueNum == 'cue_1'):
         CentralImage.draw()
 
     else:
@@ -266,13 +268,13 @@ def showTrial(left_face, top_face, right_face, left, target, targetPos, congruen
         if event.getKeys(quitKey):
             print 'quit'
             core.quit()
-    #print blockCounter, ' ', trialCounter, ' ', left, targetPos, congruency, str(correctResponse), ' ', str(RT)
+    #print blockCounter, ' ', trialCounter, ' ', left, targetPos, str(correctResponse), ' ', str(RT)
 
     # print what is returned to writeTrialToFile-Function
     ##print left_face.split('\\')[-1], top_face.split('\\')[-1], right_face.split('\\')[-1], target, targetPos, correctResponse, RT)
 
-#RICHTIG wäre: 0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: congruency, 7: number_of_cues
-    return writeTrialToFile(left_face.split('Rafd090_')[-1], top_face.split('Rafd090_')[-1], right_face.split('Rafd090_')[-1], left, target, targetPos, congruency, number_of_cues, correctResponse, RT)
+#0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: number_of_cues
+    return writeTrialToFile(faceLeft.split('Rafd090_')[-1], faceTop.split('Rafd090_')[-1], faceRight.split('Rafd090_')[-1], cueDir, targetId, targetPos, cueNum, correctResponse, RT)
 
 
 def MakeTrialList3(path):
