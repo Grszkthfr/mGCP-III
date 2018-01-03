@@ -106,7 +106,7 @@ def fillList(path):
     return faceList
 
             #RICHTIG: 0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: congruency, 7: number_of_cues
-def writeTrialToFile(left_image, top_image, right_image, left, target, targetPos, congruency, number_of_cues, correct, RT):
+def writeTrialToFile(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum, correct, RT):
     # check if file and folder already exist
     if not os.path.isdir('data/raw'):
         os.makedirs('data/raw')  # if this fails (e.g. permissions) you will get an error
@@ -119,7 +119,7 @@ def writeTrialToFile(left_image, top_image, right_image, left, target, targetPos
             fileWriter.writerow(('expName', 'subject', 'date', 'block', 'trial', 'left_face', 'top_face', 'right_face', 'left_cue', 'target_E', 'target_left', 'congruency', 'number_of_cues', 'correct_response', 'rt'))
 
         # write trial
-        fileWriter.writerow((experimentName, expInfo['subject'], getTimestampNow(), blockCounter, trialCounter, left_image, top_image, right_image, left, target, targetPos, congruency, number_of_cues, correct, RT))
+        fileWriter.writerow((experimentName, expInfo['subject'], getTimestampNow(), blockCounter, trialCounter, faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum, correct, RT))
 
         '''
         print experimentName
