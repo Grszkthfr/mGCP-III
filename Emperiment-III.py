@@ -101,6 +101,7 @@ def prepare():
 
 def fillList(path):
     faceList = []
+    
     for file in os.listdir(path):
         if file.lower().endswith(
                 ".jpg"):  ##or file.lower().endswith(".png") or file.lower().endswith(".gif") or file.lower().endswith(".tif") or file.lower().endswith(".bmp"):
@@ -166,11 +167,11 @@ def showTrial(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum)
         if (targetPos == 'target_left'):  # target left
             Target = visual.TextStim(window, text='E', font='Arial', pos=[-.65, 0])
             ##print '1'
-        elif (targetPos == 'target_rigth'):  # target right
+        elif (targetPos == 'target_right'):  # target right
             Target = visual.TextStim(window, text='E', font='Arial', pos=[.65, 0])
             ##print '2'
         else:
-            print '>>> Error target E needs to be somewhere!!'
+            print '>>> Error target E needs to be somewhere! ' + targetPos
     elif (targetId == 'target_F'):  # target F
         correctKey = responseKeyF
         wrongKey = responseKeyE
@@ -181,7 +182,7 @@ def showTrial(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum)
             Target = visual.TextStim(window, text='F', font='Arial', pos=[.65, 0])
             ##print '4'
         else:
-            print '>>> Error target F needs to be somewhere!'
+            print '>>> Error target F needs to be somewhere! ' + targetPos
     else:
         print '>>> Error, target needs to be something! ' + targetId
 
@@ -213,7 +214,7 @@ def showTrial(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum)
         CentralImage.draw()
 
     else:
-        print "neither central nor triple cue?!"
+        print 'neither central nor triple cue? ' + cueNum
 
     window.flip() # draw all faces
     wait(interStimuliIntervall) # wait interStimuliIntervall milliseconds
@@ -561,6 +562,9 @@ def run():
     trialList3 = MakeTrialList3(cueDirectory)
     trialList1 = MakeTrialList1(cueDirectory)
 
+    writeTriallistToFile(trialList1)
+    writeTriallistToFile(trialList3)
+
     prepare()
     print [expInfo['subject']]
 
@@ -570,7 +574,6 @@ def run():
     showText(window, instructionText2)
     showText(window, instructionText3)
 
-    writeTriallistToFile(trialList1)
     writeTriallistToFile(trialList3)
 
 
