@@ -33,7 +33,7 @@ goodbyeText = u"Fast geschafft!\n\nBitte geben Sie dem Versuchsleiter ein Zeiche
 ### Experimental characteristics
 
 expInfo = {'subject': ''}
-interStimuliIntervall = .500  # interstimuli Intervall in seconds, time between appearance of cue and target
+#interStimuliIntervall = .500  # interstimuli Intervall in seconds, time between appearance of cue and target
 maxResponseTime = .800  # maximale time to respond to target in seconds
 interTrialIntervall = (0.75, 1.25)  # time in seconds between two trials, from ... to, jitter is generated
 minReadingTime = 2  # mimimum time text will be presented
@@ -95,7 +95,7 @@ def prepare():
     # if (keyAssignment == 1): instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key1>", responseKey1.upper()); instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key2>", responseKey2.upper())
     # else: instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key1>", responseKey2.upper()); instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key2>", responseKey1.upper())
 
-    window = visual.Window([800, 600], monitor="Office207", fullscr=False) # prepare a window for the experiment with resolution and specified monitor
+    window = visual.Window([800, 600], monitor="Office207", fullscr=True) # prepare a window for the experiment with resolution and specified monitor
     event.Mouse(visible=False)
 
 
@@ -154,7 +154,7 @@ def showText(window, myText):
             core.quit()
 
             # 0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: number_of_cues
-def showTrial(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum):  
+def showTrial(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum, interStimuliIntervall):  
 
     # Preparation
     FixationCross = visual.TextStim(window, text=u"+", font='Arial', pos=[0, 0], height=30, units=u'pix', color='white')
@@ -304,23 +304,38 @@ def MakeTrialList3(path):
                 number_of_cues += temporaryTrialList[i][1].count('left')
                 number_of_cues += temporaryTrialList[i][2].count('left')
 
-                #left_cue: yes, target_E: yes, target_left: yes, number_of_cues: 3
-                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_left', 'cue_' + str(number_of_cues)
+                #left_cue: yes, target_E: yes, target_left: yes, number_of_cues: 3, isi: 200ms
+                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_left', 'cue_' + str(number_of_cues), .200
 
                 # left_cue: yes, target_E: yes, target_left: no, number_of_cues: 3
-                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_right', 'cue_' + str(number_of_cues)  
+                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_right', 'cue_' + str(number_of_cues), .200
 
                 # left_cue: yes, target_E: no, target_left: yes, number_of_cues: 3
-                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_left', 'cue_' + str(number_of_cues)  
+                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_left', 'cue_' + str(number_of_cues), .200
 
                 # left_cue: yes, target_E: no, target_left: no, number_of_cues: 3
-                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_right', 'cue_' + str(number_of_cues)  
+                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_right', 'cue_' + str(number_of_cues), .200
+                
+                x5 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_left', 'cue_' + str(number_of_cues), .500
 
-                if number_of_cues == 3:  # without there would only 96 trials (against 288 in the other conditions)
+                # left_cue: yes, target_E: yes, target_left: no, number_of_cues: 3
+                x6 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_E', 'target_right', 'cue_' + str(number_of_cues), .500
+
+                # left_cue: yes, target_E: no, target_left: yes, number_of_cues: 3
+                x7 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_left', 'cue_' + str(number_of_cues), .500
+
+                # left_cue: yes, target_E: no, target_left: no, number_of_cues: 3
+                x8 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_left', 'target_F', 'target_right', 'cue_' + str(number_of_cues), .500
+
+                if number_of_cues == 3:
                     trialList3.append(x1)
                     trialList3.append(x2)
                     trialList3.append(x3)
                     trialList3.append(x4)
+                    trialList3.append(x5)
+                    trialList3.append(x6)
+                    trialList3.append(x7)
+                    trialList3.append(x8)
 
             elif 'right' in x:
 
@@ -329,20 +344,33 @@ def MakeTrialList3(path):
                 number_of_cues += temporaryTrialList[i][1].count('right')
                 number_of_cues += temporaryTrialList[i][2].count('right')
 
-                # left_cue: no, target_E: yes, target_left: yes, number_of_cues: 3 
-                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_left', 'cue_' + str(number_of_cues) 
+                # left_cue: no, target_E: yes, target_left: yes, number_of_cues: 3, isi: 200 ms 
+                x1 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_left', 'cue_' + str(number_of_cues), .200
 
-                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_right', 'cue_' + str(number_of_cues)
+                x2 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_right', 'cue_' + str(number_of_cues), .200
 
-                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_left', 'cue_' + str(number_of_cues)
+                x3 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_left', 'cue_' + str(number_of_cues), .200
 
-                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_right', 'cue_' + str(number_of_cues)
+                x4 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_right', 'cue_' + str(number_of_cues), .200
+                
+                                # left_cue: no, target_E: yes, target_left: yes, number_of_cues: 3, isi: 500ms 
+                x5 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_left', 'cue_' + str(number_of_cues), .500 
+
+                x6 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_E', 'target_right', 'cue_' + str(number_of_cues), .500
+
+                x7 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_left', 'cue_' + str(number_of_cues), .500
+
+                x8 = temporaryTrialList[i][0], temporaryTrialList[i][1], temporaryTrialList[i][2], 'cue_right', 'target_F', 'target_right', 'cue_' + str(number_of_cues), .500
 
                 if number_of_cues == 3:  # without there would only 96 trials (against 288 in the other conditions)
                     trialList3.append(x1)
                     trialList3.append(x2)
                     trialList3.append(x3)
                     trialList3.append(x4)
+                    trialList3.append(x5)
+                    trialList3.append(x6)
+                    trialList3.append(x7)
+                    trialList3.append(x8)
 
     # Check number of Trials
     testCues3 = 0
@@ -378,11 +406,22 @@ def MakeTrialList3(path):
             testCueLeft3 += 1
         else:
             testCueRight3 += 1
+            
+    # Check number of Trials
+    testISI2003 = 0
+    testISI5003 = 0
+    for i in range(len(trialList3)):
+        if trialList3[i][7] == .200:
+            testISI2003 += 1
+        else:
+            testISI5003 += 1
 
-    print 'Trials with one gaze cue: ', testCues3, ' of 48 trials.'
-    print 'Trials with target position: ', testTarLeft3, ' of 24 target-left trials, ', testTarRight3, ' of 24 target-right trials.'
-    print 'Trials with target identity: ', testTarF3, ' of 24 target-F trials, ', testTarE3, ' of 24 target-E trials.'
-    print 'Trials with cue direction: ', testCueLeft3, ' of 24 cue-left trials, ', testCueRight3, ' of 24 cue-right trials.'
+    print 'Trials with one gaze cue: ', testCues3, ' of 96 trials.'
+    print 'Trials with target position: ', testTarLeft3, ' of 48 target-left trials, ', testTarRight3, ' of 48 target-right trials.'
+    print 'Trials with target identity: ', testTarF3, ' of 48 target-F trials, ', testTarE3, ' of 48 target-E trials.'
+    print 'Trials with cue direction: ', testCueLeft3, ' of 48 cue-left trials, ', testCueRight3, ' of 48 cue-right trials.'
+    print 'Trials with ISI: ', testISI2003, ' of 48 ISI 200ms trials, ', testISI5003, ' of 48 ISI 500ms trials.'
+
 
     return trialList3
 
@@ -399,48 +438,84 @@ def MakeTrialList1(path):
         # coding trials
         if 'left' in x:
 
-            #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: number_of_cues: 1
-            x1 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_E', 'target_left', 'cue_1'
+            #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: number_of_cues: 1, isi: 200ms
+            x1 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_E', 'target_left', 'cue_1', .200
 
             # left_cue: yes, target_E: yes, target_left: no, number_of_cues: 1
-            x2 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_E', 'target_right', 'cue_1'  
+            x2 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_E', 'target_right', 'cue_1', .200
 
             # left_cue: yes, target_E: no, target_left: yes, number_of_cues: 1
-            x3 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_F', 'target_left', 'cue_1'  
+            x3 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_F', 'target_left', 'cue_1', .200
 
             # left_cue: yes, target_E: no, target_left: no, number_of_cues: 1
-            x4 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_F', 'target_right', 'cue_1'  
+            x4 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_F', 'target_right', 'cue_1', .200
+
+            #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: number_of_cues: 1, isi: 200ms
+            x5 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_E', 'target_left', 'cue_1', .500
+
+            # left_cue: yes, target_E: yes, target_left: no, number_of_cues: 1
+            x6 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_E', 'target_right', 'cue_1', .500
+
+            # left_cue: yes, target_E: no, target_left: yes, number_of_cues: 1
+            x7 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_F', 'target_left', 'cue_1', .500
+
+            # left_cue: yes, target_E: no, target_left: no, number_of_cues: 1
+            x8 = '99', temporaryTrialList[i][0], '99', 'cue_left', 'target_F', 'target_right', 'cue_1', .500
 
             trialList1.append(x1)
             trialList1.append(x2)
             trialList1.append(x3)
             trialList1.append(x4)
-            
+            trialList1.append(x5)
+            trialList1.append(x6)
+            trialList1.append(x7)
+            trialList1.append(x8)
+
             trialList1.append(x1)
             trialList1.append(x2)
             trialList1.append(x3)
             trialList1.append(x4)
+            trialList1.append(x5)
+            trialList1.append(x6)
+            trialList1.append(x7)
+            trialList1.append(x8)
 
         elif 'right' in x:
 
-            # left_cue: no, target_E: yes, target_left: yes, number_of_cues: 1 
-            x1 = '99',temporaryTrialList[i][0],  '99', 'cue_right', 'target_E', 'target_left', 'cue_1'
+            # left_cue: no, target_E: yes, target_left: yes, number_of_cues: 1, isi: 200ms 
+            x1 = '99',temporaryTrialList[i][0],  '99', 'cue_right', 'target_E', 'target_left', 'cue_1', .200
 
-            x2 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_E', 'target_right', 'cue_1'
+            x2 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_E', 'target_right', 'cue_1', .200
 
-            x3 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_F', 'target_left', 'cue_1'
+            x3 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_F', 'target_left', 'cue_1', .200
 
-            x4 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_F', 'target_right', 'cue_1'
+            x4 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_F', 'target_right', 'cue_1', .200
+
+            x5 = '99',temporaryTrialList[i][0],  '99', 'cue_right', 'target_E', 'target_left', 'cue_1', .500
+
+            x6 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_E', 'target_right', 'cue_1', .500
+
+            x7 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_F', 'target_left', 'cue_1', .500
+
+            x8 = '99', temporaryTrialList[i][0], '99', 'cue_right', 'target_F', 'target_right', 'cue_1', .500
 
             trialList1.append(x1)
             trialList1.append(x2)
             trialList1.append(x3)
             trialList1.append(x4)
-            
+            trialList1.append(x5)
+            trialList1.append(x6)
+            trialList1.append(x7)
+            trialList1.append(x8)
+
             trialList1.append(x1)
             trialList1.append(x2)
             trialList1.append(x3)
             trialList1.append(x4)
+            trialList1.append(x5)
+            trialList1.append(x6)
+            trialList1.append(x7)
+            trialList1.append(x8)
 
     # Check number of Trials                
     testCues1 = 0
@@ -476,11 +551,21 @@ def MakeTrialList1(path):
             testCueLeft1 += 1
         else:
             testCueRight1 += 1
+            
+    # Check number of Trials                
+    testISI2001 = 0
+    testISI5001 = 0
+    for i in range(len(trialList1)):
+        if trialList1[i][7] == .200:
+            testISI2001 += 1
+        else:
+            testISI5001 += 1
 
-    print 'Trials with one gaze cue: ', testCues1, ' of 48 trials.'
-    print 'Trials with target position: ', testTarLeft1, ' of 24 target-left trials, ', testTarRight1, ' of 24 target-right trials.'
-    print 'Trials with target identity: ', testTarF1, ' of 24 target-F trials, ', testTarE1, ' of 24 target-E trials.'
-    print 'Trials with cue direction: ', testCueLeft1, ' of 24 cue-left trials, ', testCueRight1, ' of 24 cue-right trials.'
+    print 'Trials with one gaze cue: ', testCues1, ' of 96 trials.'
+    print 'Trials with target position: ', testTarLeft1, ' of 48 target-left trials, ', testTarRight1, ' of 48 target-right trials.'
+    print 'Trials with target identity: ', testTarF1, ' of 48 target-F trials, ', testTarE1, ' of 48 target-E trials.'
+    print 'Trials with cue direction: ', testCueLeft1, ' of 48 cue-left trials, ', testCueRight1, ' of 48 cue-right trials.'
+    print 'Trials with ISI: ', testISI2001, ' of 48 ISI 200ms trials, ', testISI5001, ' of 48 ISI 500ms trials.'
 
 
     return trialList1
@@ -493,16 +578,16 @@ def TrialFromTrialListPicker(i):
 
         if blockCounter == 1:
             #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: number_of_cues: 1
-            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6])
+            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6], trialList3[i][7])
         
         elif blockCounter == 2:
-            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6])
+            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6], trialList1[i][7])
         
         elif blockCounter == 3:
-            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6])
+            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6], trialList3[i][7])
         
         elif blockCounter == 4:
-            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6])
+            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6], trialList1[i][7])
 
         else:
             print "Error no triallist picked for odd subject id"
@@ -512,16 +597,16 @@ def TrialFromTrialListPicker(i):
         if blockCounter == 1:
 
             #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: number_of_cues: 1
-            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6])
+            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6], trialList1[i][7])
 
         elif blockCounter == 2:
-            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6])
+            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6], trialList3[i][7])
 
         elif blockCounter == 3:
-            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6])
+            return showTrial(trialList1[i][0], trialList1[i][1], trialList1[i][2], trialList1[i][3], trialList1[i][4], trialList1[i][5], trialList1[i][6], trialList1[i][7])
 
         elif blockCounter == 4:
-            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6])
+            return showTrial(trialList3[i][0], trialList3[i][1], trialList3[i][2], trialList3[i][3], trialList3[i][4], trialList3[i][5], trialList3[i][6], trialList3[i][7])
         else:
             print "Error no triallist picked for even subject id"
     else:
