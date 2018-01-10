@@ -25,7 +25,7 @@ pathData <- "data/"
 #Getting the experimental rawdata (in long format) into R by making a temporal list with each *.csv-file, and then for each file "f" bind row to df.l
 
 tmp <- list.files(paste0(pathData,"raw"), pattern="*.csv")
-df.exp.l = NULL
+raw.exp.l = NULL
 vp_tmp = NULL
 
 for (file in 1:length(tmp))
@@ -33,18 +33,18 @@ for (file in 1:length(tmp))
   vp_tmp <- read.table(paste0(pathData,"raw/",tmp[file]), header = T, sep=",", dec=".")
   # print(file)
   # print(nrow(vp_tmp))
-  # print(table(vp_tmp$target_left[vp_tmp$number_of_cues == 3]))
-  df.exp.l <- rbind(df.exp.l, vp_tmp, deparse.level = 1, make.row.names = T)
+  # print(table(vp_tmp$target_left[vp_tmp$cue_num == 3]))
+  raw.exp.l <- rbind(raw.exp.l, vp_tmp, deparse.level = 1, make.row.names = T)
   
   vp_tmp = NULL
 }
 
 
 #Saving complete raw data in long format to .csv
-write.csv2(df.exp.l,paste0(pathData,"raw.l.exp.mGCP-III.csv"), row.names = FALSE)
+#write.csv2(df.exp.l,paste0(pathData,"raw.l.exp.mGCP-III.csv"), row.names = FALSE)
 
 #clear workspace
-rm(tmp, vp_tmp, file, df.exp.l)
+rm(tmp, vp_tmp, file)
 
 ```
 
@@ -52,47 +52,40 @@ rm(tmp, vp_tmp, file, df.exp.l)
 
 triallist <- read.csv("triallist.csv")
 
-triallist %>% 
+test <- triallist %>% 
   group_by(pic_top,cue_dir,cue_num,target_id,target_pos) %>%
   summarize(count = n())
-  #View
+  
 
 ```
 
  
 ```{r tidy experimental data}
 
-df.exp.l.raw <- read.csv2(paste0(pathData,"raw.l.exp.mGCP-III.csv"))
+#df.exp.l <- read.csv2(paste0(pathData,"raw.l.exp.mGCP-III.csv"))
 
-tidy.df.exp.l <- df.exp.l.raw %>% 
+df.exp.l <- raw.exp.l %>% filter(subject == 1 | subject ==2) %>% 
   na_if(99) %>%
   mutate(
     rt = round(rt, 3),
-    face_left = as.factor(map(strsplit(as.character(face_left),"[[:punct:]]"), ~.x[1]) %>% unlist()),
-    face_top = as.factor(map(strsplit(as.character(face_top),"[[:punct:]]"), ~.x[1]) %>% unlist()),
-    face_right = as.factor(map(strsplit(as.character(face_right),"[[:punct:]]"), ~.x[1]) %>% unlist()),
-    face_combo = ifelse(face_left == 61, # combination indicator
+    face_left = as.factor(unlist(map(strsplit(as.character(face_left),"[[:punct:]]"), ~.x[1]))),
+    #face_left = face_left %>%  as.character() %>%  strsplit("[[:punct:]]") %>%  map(~.x[1]) %>% unlist(), 
+    face_top = as.factor(unlist(map(strsplit(as.character(face_top),"[[:punct:]]"), ~.x[1]))),
+    face_right = as.factor(unlist(map(strsplit(as.character(face_right),"[[:punct:]]"), ~.x[1]))),
+    face_combo = as.factor(ifelse(face_left == 61, # combination indicator
                             ifelse(face_top == 26,1,2),
                             ifelse(face_left == 26,
                                    ifelse(face_top == 61,3,4),
                                    ifelse(face_left == 37,
-                                          ifelse(face_top == 61,5,6),NA))),
-  # postCueTest = ifelse(cueDir == "left" & left_cue == 1, T,
-  #                      ifelse(cueDir == "right" & left_cue== 0, T, F)),
-  congruency = factor(ifelse(target_pos == cue_dir, "congruent", "incongruent")))
-,
-  correct_response = factor(ifelse(correct_response == 1, "correct", "incorrect")),
-  target_left = factor(ifelse(target_left == 1, "target left", "target right")),
-  left_cue = factor(ifelse(left_cue == 1, "left cue", "right cue")),
-  target_E = factor(ifelse(target_E == 1, "target E", "target F")),
-  number_of_cues = factor(ifelse(number_of_cues == 1, "one cue", "three cues"))) %>% 
+                                          ifelse(face_top == 61,5,6),NA)))),
+congruency = factor(ifelse(unlist(map(strsplit(as.character(target_pos),"[[:punct:]]"), ~.x[2])) == unlist(map(strsplit(as.character(cue_dir),"[[:punct:]]"), ~.x[2])), "congruent", "incongruent"))) %>%
   mutate_at(
-    vars(expName,subject,block:correct_response),
+    vars(experiment,subject,block:correct_response),
     funs(as.factor)) %>% # vars all as factors 
-  select(-number_of_cues,-correct_response,-rt,everything()) %>% # reorder 
-  select(expName:trial,left_cue:rt) # kick picutre names out
+  select(experiment:face_right,face_combo,everything()) %>% 
+  select(-rt, everything())# reorder 
 
-#write.csv2(tidy.df.exp.l,paste0(pathData,"tidy.l.exp.mGCP-II.csv"), row.names = FALSE)
+#write.csv2(df.exp.l,paste0(pathData,"tidy.l.exp.mGCP-II.csv"), row.names = FALSE)
 
 rm(df.exp.l.raw)
 
@@ -140,7 +133,6 @@ rm(df.quest.l.raw)
   
 ```
 
-
 ```{r jamovi.df}
 
 #tidy.df.exp.l <- read.csv2(paste0(pathData,"tidy.l.df.mGCP-II.csv"))
@@ -165,7 +157,7 @@ tmp2.df.jamovi <- tidy.df.exp.l %>%
 
 tmp3.df.jamovi <- tidy.df.exp.l %>%
   filter(correct_response == "correct") %>%
-  mutate(key = ifelse(number_of_cues == "three cues",
+  mutate(key = ifelse(cue_num == "three cues",
                       ifelse(congruency == "congruent",
                              "m_co1cu3","m_co0cu3"),
                       ifelse(congruency == "congruent",
@@ -195,7 +187,7 @@ tmp4b.df.jamovi <- tidy.df.exp.l %>%
   filter(correct_response == "correct") %>% 
   mutate(key = ifelse(left_cue == "right cue",
                       #Yes: "right cue"
-                      ifelse(number_of_cues == "three cues",
+                      ifelse(cue_num == "three cues",
                              #Yes: "three cues"
                              ifelse(congruency == "congruent",
                                     # Yes: "congruent"
@@ -209,7 +201,7 @@ tmp4b.df.jamovi <- tidy.df.exp.l %>%
                                     #No: "congruent"
                                     "m_co0cu1R")),
                       #No: "right cue"
-                      ifelse(number_of_cues == "three cues",
+                      ifelse(cue_num == "three cues",
                              #Yes: "three cues"
                              ifelse(congruency == "congruent",
                                     #Yes: "congruent"
@@ -232,7 +224,7 @@ tmp4b.df.jamovi <- tidy.df.exp.l %>%
     m_dif_cu3R = m_co1cu3R - m_co0cu3R)
 
 tmp5.df.jamovi <- tidy.df.exp.l %>% 
-  filter(correct_response == "correct", number_of_cues == "one cue") %>% 
+  filter(correct_response == "correct", cue_num == "one cue") %>% 
   mutate(key = ifelse(pic_top == 26, ifelse(congruency == "congruent",
                                             "m_co1p26", "m_co0p26"),
                  ifelse(pic_top == 37, ifelse(congruency == "congruent",
@@ -248,7 +240,7 @@ tmp5.df.jamovi <- tidy.df.exp.l %>%
     m_dif_cu1_61 = m_co1p61 - m_co0p61)
 
 tmp6.df.jamovi <- tidy.df.exp.l %>%
-  filter(correct_response == "correct",  number_of_cues == "three cues") %>%
+  filter(correct_response == "correct",  cue_num == "three cues") %>%
   mutate(key = ifelse(pic_combo == 1,
                       ifelse(congruency == "congruent",
                                              "m_co1pc1","m_co0pc1"),
@@ -319,13 +311,13 @@ geom_split_violin <- function (mapping = NULL, data = NULL, stat = "ydensity", p
 
 ```{r descriptives & plots}
 
-tidy.df.exp.l <- read.csv2(paste0(pathData,"tidy.l.df.mGCP-II.csv"))
+#tidy.df.exp.l <- read.csv2(paste0(pathData,"tidy.l.df.mGCP-II.csv"))
 
 
-dscr.exp.congruency.and.cues <- tidy.df.exp.l %>% filter(correct_response == "correct") %>% group_by(congruency, number_of_cues) %>% summarise_at(vars(rt), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), mean(., na.rm = TRUE), sd(., na.rm = TRUE), se=sd(., na.rm = TRUE)/sqrt(n())))
+dscr.exp.congruency.and.cues <- df.exp.l %>% filter(correct_response == 1) %>% group_by(congruency, cue_num) %>% summarise_at(vars(rt), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), mean(., na.rm = TRUE), sd(., na.rm = TRUE), se=sd(., na.rm = TRUE)/sqrt(n())))
 
   
-p.validT <- tidy.df.exp.l %>% group_by(subject) %>%
+p.validT <- df.exp.l %>% group_by(subject) %>%
   summarize(
     trials = n(),
     percent_valid = round(sum(!is.na(rt))/trials*100,1)) %>%
@@ -333,98 +325,97 @@ p.validT <- tidy.df.exp.l %>% group_by(subject) %>%
   geom_histogram(aes(x= percent_valid), binwidth = 1) +
   xlim(0,100) +
   geom_vline(aes(xintercept=50), color = "red", linetype="dashed", size=.1) +
-  ggsave("01_validTrials.png")
+  ggsave("plots/01_validTrials.png")
 
 #p.validT
 
-p.correctT <- tidy.df.exp.l %>%
+p.correctT <- df.exp.l %>%
   group_by(subject) %>%
   summarize(
-    percent_correct = round(table(correct_response == "correct")[2]/192*100,1)
+    percent_correct = round(table(correct_response == 1)[2]/192*100,1)
     ) %>%
   ggplot() +
   geom_histogram(aes(x= percent_correct), binwidth = 1) +
   xlim(0,100)+
   geom_vline(aes(xintercept=50), color = "red", linetype="dashed", size=.1) +
-  ggsave("02_correctTrials.png")
+  ggsave("plots/02_correctTrials.png")
 
 #p.correctT
 
-p.pics <- tidy.df.exp.l %>%
+p.pics <- df.exp.l %>%
   ggplot() +
-  geom_bar(aes(x=target_E)) +
-  facet_wrap(~ number_of_cues) +
-  ggsave("03_nPictures.png")
+  geom_bar(aes(x=target_id)) +
+  facet_wrap(~ cue_num) +
+  ggsave("plots/03_nPictures.png")
 
 #p.pics
 
-p.tarPosXCueDir <- tidy.df.exp.l %>%
+p.tarPosXCueDir <- df.exp.l %>%
   ggplot() +
-  geom_bar(aes(x=target_left)) +
-  facet_wrap( ~ left_cue) +
-  ggsave("04_targetPositionXcueDirection.png")
+  geom_bar(aes(x=target_pos)) +
+  facet_wrap( ~ cue_dir) +
+  ggsave("plots/04_targetPositionXcueDirection.png")
 
 #p.tarPosXCueDir  
   
-p.congXcueDir <- tidy.df.exp.l %>%
+p.congXcueDir <- df.exp.l %>%
   ggplot() +
   geom_bar(aes(x=congruency)) +
-  facet_wrap( ~ left_cue) +
-  ggsave("05_CongruencyXcueDirection.png")
+  facet_wrap( ~ cue_dir) +
+  ggsave("plots/05_CongruencyXcueDirection.png")
 
 #p.congXcueDir
 
-p.congXtarPos <- tidy.df.exp.l %>%
+p.congXtarPos <- df.exp.l %>%
   ggplot() +
-  geom_bar(aes(x=congruency )) +
-  facet_wrap(~ target_left) +
-  ggsave("06_congruencyXtargetPosition.png")
+  geom_bar(aes(x=congruency)) +
+  facet_wrap(~ target_pos) +
+  ggsave("plots/06_congruencyXtargetPosition.png")
 
 #p.congXtarPos 
 
-p.congXtarPosXcueDir <- tidy.df.exp.l %>%
+p.congXtarPosXcueDir <- df.exp.l %>%
   ggplot() +
   geom_bar(aes(x=congruency )) +
-  facet_wrap(target_left ~ left_cue) +
-  ggsave("07_congruencyXtargetPositionXcueDirection.png")
+  facet_wrap(target_pos ~ cue_dir) +
+  ggsave("plots/07_congruencyXtargetPositionXcueDirection.png")
 
 #p.congXtarPosXcueDir
 
- # tidy.df.exp.l %>% filter(correct_response == 1) %>%
- #   group_by(congruency, number_of_cues) %>%
+ # df.exp.l %>% filter(correct_response == 1) %>%
+ #   group_by(congruency, cue_num) %>%
  #   summarise_at(vars(rt), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), mean(., na.rm = TRUE), sd(., na.rm = TRUE), se=sd(., na.rm = TRUE)/sqrt(n()))) %>%
- #   ggplot(aes(x = number_of_cues, y = mean, fill = congruency)) +
+ #   ggplot(aes(x = cue_num, y = mean, fill = congruency)) +
  #   geom_col(position = "dodge") +
  #   geom_errorbar(
  #     aes(ymin=dscr.exp.congruency.and.cues$mean - dscr.exp.congruency.and.cues$se,
  #         ymax=dscr.exp.congruency.and.cues$mean + dscr.exp.congruency.and.cues$se), width=.2, position=position_dodge(.9))
 
-
-p.densityT <- tidy.df.exp.l %>% 
-  ggplot() +
-  geom_density(aes(x=rt, fill = congruency), alpha=.3, fill = "grey") +
-  geom_vline(aes(xintercept=mean(rt, na.rm=T)), color = "red", linetype="dashed", size=1) +
-  geom_vline(data = filter(tidy.df.exp.l, congruency == "incongruent"), aes(xintercept=mean(rt, na.rm=T)), color = "blue", linetype="dashed", size=1)
+# 
+# p.densityT <- df.exp.l %>% 
+#   ggplot() +
+#   geom_density(aes(x=rt, fill = congruency), alpha=.3, fill = "grey") +
+#   geom_vline(aes(xintercept=mean(rt, na.rm=T)), color = "red", linetype="dashed", size=1) +
+#   geom_vline(data = filter(df.exp.l, congruency == "incongruent"), aes(xintercept=mean(rt, na.rm=T)), color = "blue", linetype="dashed", size=1)
 
 #p.densityT
 
-p.boxplotT <- tidy.df.exp.l %>%
-  filter(correct_response == "correct") %>%
-  ggplot(aes(x = number_of_cues, y = rt, fill = congruency)) +
+p.boxplotT <- df.exp.l %>%
+  filter(correct_response == 1) %>%
+  ggplot(aes(x = cue_num, y = rt, fill = congruency)) +
   geom_split_violin() +
   geom_boxplot(alpha =.25) +
-  facet_wrap(~left_cue) +
-  ggsave("08_boxplot.png")
+  ggsave("plots/08_boxplot.png")
 
 #p.boxplotT
 
-p.subjectT <- tidy.df.exp.l %>% filter(correct_response == "correct") %>%
+p.subjectT <- df.exp.l %>% filter(correct_response == 1) %>%
   ggplot(aes(x = congruency, y = rt, color = congruency)) +
   geom_split_violin() +
   geom_boxplot(alpha =.25) +
   facet_wrap(~ subject) 
 
-p.boxplot1cue <- tidy.df.exp.l %>% filter(correct_response == "correct", number_of_cues == "one cue", left_cue == "left cue" ) %>%
+p.boxplot1cue <- df.exp.l %>% filter(correct_response == 1, cue_num == "cue_1", cue_dir == "cue_left" ) %>%
   ggplot(aes(x = congruency, y = rt, color = congruency)) +
   geom_split_violin() +
   geom_boxplot(alpha =.25) +
@@ -432,7 +423,7 @@ p.boxplot1cue <- tidy.df.exp.l %>% filter(correct_response == "correct", number_
 
 #p.boxplot1cue
 
-p.boxplot3cues <- tidy.df.exp.l %>% filter(correct_response == "correct", number_of_cues == "three cues", left_cue == "left cue") %>%
+p.boxplot3cues <- df.exp.l %>% filter(correct_response == 1, cue_num == "cue_3", cue_dir == "cue_left") %>%
   ggplot(aes(x = congruency, y = rt, color = congruency)) +
   geom_split_violin() +
   geom_boxplot(alpha =.25) +
@@ -440,7 +431,7 @@ p.boxplot3cues <- tidy.df.exp.l %>% filter(correct_response == "correct", number
 
 #p.boxplot3cues
 
-rm(p.boxplot3cues, p.boxplot1cue, p.subjectT,p.boxplotT, p.densityT, p.congXtarPosXcueDir, p.congXtarPos, p.congXcueDir, p.tarPosXCueDir, p.pics)
+rm(p.correctT, p.validT, p.boxplot3cues, p.boxplot1cue, p.subjectT,p.boxplotT, p.densityT, p.congXtarPosXcueDir, p.congXtarPos, p.congXcueDir, p.tarPosXCueDir, p.pics)
 
 ```
 
