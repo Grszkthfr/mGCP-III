@@ -1,13 +1,20 @@
 data/*
 
+
+plots/*
 *.Rproj
+
 
 *.png
 
+
 *.pyc
+
 
 *.html
 
+
 .Rproj.user
+
 
 .Rhistory
