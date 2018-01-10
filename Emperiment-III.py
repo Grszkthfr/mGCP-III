@@ -17,7 +17,7 @@ eveText = "" # a blank screen for giving informend consent
 
 welcomeText = u"Herzlich Willkommen!\n\nVielen Dank, dass Sie heute an unserem Versuch zur Aufmerksamkeitsverteilung teilnehmen. Sie helfen uns damit sehr weiter, denn Sie sind ein wichtiger Teil unserer Studie.\nBitte bearbeiten Sie den Versuch so konzentriert und gewissenhaft wie möglich.\n\n\n\t\t\t\t\t\tWeiter mit der <Leertaste>"
 
-instructionText1 = u"Der Versuch besteht aus vier Durchgängen á vier Minuten. Zwischendurch gibt es kleine Pausen.\n\nZuerst legen Sie bitte den Zeigefinger und den Mittelfinger Ihrer dominanten Hand auf die markierten Tasten der Tastatur.\n\nLassen Sie die Finger für die Dauer des Versuchs dort.\n\n\n\t\t\t\t\t\tWeiter mit der <Leertaste>"
+instructionText1 = u"Der Versuch besteht aus vier Durchgängen á 8 Minuten. Zwischendurch gibt es kleine Pausen.\n\nZuerst legen Sie bitte den Zeigefinger und den Mittelfinger Ihrer dominanten Hand auf die markierten Tasten der Tastatur.\n\nLassen Sie die Finger für die Dauer des Versuchs dort.\n\n\n\t\t\t\t\t\tWeiter mit der <Leertaste>"
 
 instructionText2 = u"Zu Beginn eines Durchganges fixieren Sie bitte das Fixationskreuz.\n\nKurz darauf werden Ihnen Gesichter präsentiert.\n\nAnschließend erscheint ein Buchstabe auf der rechten oder linken Bildschirmhälfte.\n\n\n\t\t\t\t\t\tWeiter mit der <Leertaste>"
 
@@ -95,7 +95,7 @@ def prepare():
     # if (keyAssignment == 1): instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key1>", responseKey1.upper()); instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key2>", responseKey2.upper())
     # else: instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key1>", responseKey2.upper()); instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key2>", responseKey1.upper())
 
-    window = visual.Window([800, 600], monitor="Office207", fullscr=True) # prepare a window for the experiment with resolution and specified monitor
+    window = visual.Window([1920, 1080], monitor="Office207", fullscr=False) # prepare a window for the experiment with resolution and specified monitor
     event.Mouse(visible=False)
 
 
@@ -109,7 +109,7 @@ def fillList(path):
     return faceList
 
             #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: number_of_cues, 7: correctResponse, 8: RT
-def writeTrialToFile(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum, correctResponse, RT):
+def writeTrialToFile(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum, interStimuliIntervall, correctResponse, RT):
     # check if file and folder already exist
     if not os.path.isdir('data/raw'):
         os.makedirs('data/raw')  # if this fails (e.g. permissions) you will get an error
@@ -119,10 +119,10 @@ def writeTrialToFile(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, 
     with open(fileName, 'ab') as saveFile:  # 'a' = append; 'w' = writing; 'b' = in binary mode
         fileWriter = csv.writer(saveFile, delimiter=',')  # generate fileWriter
         if os.stat(fileName).st_size == 0:  # if file is empty, insert header
-            fileWriter.writerow(('experiment', 'subject', 'date', 'block', 'trial', 'face_left', 'face_top', 'face_right', 'cue_dir', 'target_id', 'target_pos', 'cue_num', 'correct_response', 'rt'))
+            fileWriter.writerow(('experiment', 'subject', 'date', 'block', 'trial', 'face_left', 'face_top', 'face_right', 'cue_dir', 'target_id', 'target_pos', 'cue_num', 'isi', 'correct_response', 'rt'))
 
         # write trial
-        fileWriter.writerow((experimentName, expInfo['subject'], getTimestampNow(), blockCounter, trialCounter, faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum, correctResponse, RT))
+        fileWriter.writerow((experimentName, expInfo['subject'], getTimestampNow(), blockCounter, trialCounter, faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum, interStimuliIntervall, correctResponse, RT))
 
         '''
         print experimentName
@@ -240,16 +240,17 @@ def showTrial(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum,
     event.clearEvents()
 
     while (reactionTime.getTime() <= maxResponseTime): # Participant decides when to proceed, after onset of target!
+
+        RT = reactionTime.getTime()
+
         if event.getKeys(correctKey):
-            correctResponse = 1
-            RT = reactionTime.getTime()
+            correctResponse = 'correct'
             ##print 'correct'
             ##print reactionTime.getTime()
             break
 
         elif event.getKeys(wrongKey):
-            correctResponse = 0
-            RT = reactionTime.getTime()
+            correctResponse = 'incorrect'
             ##print 'NOT correct'
             ##print reactionTime.getTime()
             break
@@ -277,7 +278,7 @@ def showTrial(faceLeft, faceTop, faceRight, cueDir, targetId, targetPos, cueNum,
     ##print left_face.split('\\')[-1], top_face.split('\\')[-1], right_face.split('\\')[-1], target, targetPos, correctResponse, RT)
 
 #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue, 4: target_E, 5: target_left, 6: number_of_cues
-    return writeTrialToFile(faceLeft.split('Rafd090_')[-1], faceTop.split('Rafd090_')[-1], faceRight.split('Rafd090_')[-1], cueDir, targetId, targetPos, cueNum, correctResponse, RT)
+    return writeTrialToFile(faceLeft.split('Rafd090_')[-1], faceTop.split('Rafd090_')[-1], faceRight.split('Rafd090_')[-1], cueDir, targetId, targetPos, cueNum, str(int(interStimuliIntervall*1000))+'ms', correctResponse, RT)
 
 
 def MakeTrialList3(path):
@@ -416,7 +417,7 @@ def MakeTrialList3(path):
         else:
             testISI5003 += 1
 
-    print 'Trials with one gaze cue: ', testCues3, ' of 96 trials.'
+    print 'Trials with three gaze cue: ', testCues3, ' of 96 trials.'
     print 'Trials with target position: ', testTarLeft3, ' of 48 target-left trials, ', testTarRight3, ' of 48 target-right trials.'
     print 'Trials with target identity: ', testTarF3, ' of 48 target-F trials, ', testTarE3, ' of 48 target-E trials.'
     print 'Trials with cue direction: ', testCueLeft3, ' of 48 cue-left trials, ', testCueRight3, ' of 48 cue-right trials.'
@@ -647,8 +648,8 @@ def run():
     trialList3 = MakeTrialList3(cueDirectory)
     trialList1 = MakeTrialList1(cueDirectory)
 
-    writeTriallistToFile(trialList1)
-    writeTriallistToFile(trialList3)
+    #writeTriallistToFile(trialList1)
+    #writeTriallistToFile(trialList3)
 
     prepare()
     print [expInfo['subject']]
@@ -659,8 +660,6 @@ def run():
     showText(window, instructionText2)
     showText(window, instructionText3)
 
-    writeTriallistToFile(trialList3)
-
 
     Block(trialList1, trialList3)
 
@@ -670,6 +669,7 @@ def run():
     window.close()
     core.quit()
 
+'''
 def writeTriallistToFile(listOfTrials):
     #if not os.path.isdir('triallist'): #exist the path?! if not...
     #    os.makedirs('triallist')
@@ -678,12 +678,10 @@ def writeTriallistToFile(listOfTrials):
     with open(fileName, 'ab') as saveFile: #'a' = append; 'w' = writing; 'b' = in binary mode
         fileWriter = csv.writer(saveFile, delimiter=',')
         if os.stat(fileName).st_size == 0: #if file is empty, insert header
-            fileWriter.writerow(('pic_left', 'pic_top', 'pic_right', 'cue_dir', 'target_id', 'target_pos', 'cue_num')) #1=ja
+            fileWriter.writerow(('pic_left', 'pic_top', 'pic_right', 'cue_dir', 'target_id', 'target_pos', 'cue_num', 'isi'                          ))
         for i in range(len(listOfTrials)):
-            fileWriter.writerow(listOfTrials[i])
-
- #0: pic_left, 1: pic_top, 2: pic_right, 3: left_cue: yes, 4: target_E: yes, 5: target_left: yes, 6: number_of_cues
-
+                fileWriter.writerow(listOfTrials[i])
+'''
 run()
 
 
