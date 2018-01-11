@@ -1,0 +1,122 @@
+---
+title: "Power Simulation - Bachelorarbeit WS17 - mGCP-III"
+output: html_notebook
+---
+#from https://cognitivedatascientist.com/2015/12/14/power-simulation-in-r-the-repeated-measures-anova-5/
+
+```{r Define the simulation parameters and build the design matrix}
+rm(list=ls())
+
+# define the parameters
+mu = c(500, 515, 495, 520) #true effects: cong1 incong1 cong3 incong 3
+#maineffect_congruency = ((mu[1]+mu[3])/2)-((mu[2]+mu[4])/2) # ~ 20ms, based on Driver1999, Frischen2004, Frischen2007 with most similar designs
+sigma = 45  # population standard deviation
+rho = 0.9 # correlation between repeated measures, based on previous lab-intern studies
+nsubs = 65 # how many subjects?
+nsims = 5000 # how many simulation replicates?
+
+# create 2 factors representing the 2 independent variables
+cond = data.frame(
+  congruency = rep(factor(letters[1:2]), nsubs * 2), #congruency
+  cueNum = rep(factor(letters[1:2]), nsubs, each=2)) #number of cues
+
+# create a subjects factor
+subject = factor(sort(rep(1:nsubs, 4)))
+
+# combine above into the design matrix
+dm = data.frame(subject, cond)
+
+```
+
+```{r Build Sigma: the population variance-covariance matrix}
+
+# create k x k matrix populated with sigma
+sigma.mat <- rep(sigma, 4)
+S <- matrix(sigma.mat, ncol=length(sigma.mat), nrow=length(sigma.mat))
+ 
+# compute covariance between measures
+Sigma <- t(S) * S * rho  
+ 
+# put the variances on the diagonal 
+diag(Sigma) <- sigma^2  
+
+```
+
+```{r Run the simulation}
+
+# stack 'nsims' individual data frames into one large data frame
+df = dm[rep(seq_len(nrow(dm)), nsims), ]
+ 
+# add an index column to track the simulation run
+df$simID = sort(rep(seq_len(nsims), nrow(dm)))
+ 
+# sample the observed data from a multivariate normal distribution
+# using MASS::mvrnorm with the parameters mu and Sigma created earlier
+# and bind to the existing df
+ 
+require(MASS)
+make.y = expression(as.vector(t(mvrnorm(nsubs, mu, Sigma))))
+df$y = as.vector(replicate(nsims, eval(make.y)))             
+ 
+# use do(), the general purpose complement to the specialized data 
+# manipulation functions available in dplyr, to run the ANOVA on
+# each section of the grouped data frame created by group_by
+ 
+require(dplyr)
+require(car)
+require(broom)
+ 
+mods <- df %>% 
+  group_by(simID) %>% 
+    do(model = aov(y ~ congruency * cueNum + Error(subject / (congruency*cueNum)), qr=FALSE, data = .)) 
+ 
+# extract p-values for each effect and store in a data frame
+p = data.frame(
+  mods %>% do(as.data.frame(tidy(.$model[[3]])$p.value[1])),
+  mods %>% do(as.data.frame(tidy(.$model[[4]])$p.value[1])),
+  mods %>% do(as.data.frame(tidy(.$model[[5]])$p.value[1])))
+colnames(p) = c('congruency','cueNum','Interaction')
+
+```
+
+```{r Calculate and print the empirical power}
+
+power = apply(as.matrix(p), 2, 
+  function(x) round(mean(ifelse(x < .05, 1, 0) * 100),0))
+
+```
+
+```{r Visualize the distributions of p-values.}
+
+# plot the known effects
+require(ggplot2)
+require(gridExtra)
+ 
+means = data.frame(cond[1:4, ], mu, SE = sigma / sqrt(nsubs))
+plt1 = ggplot(means, aes(y = mu, x = congruency, fill=cueNum)) +
+  geom_bar(position = position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin = mu-SE, ymax = mu+SE), 
+    position = position_dodge(width=0.9), size=.6, width=.3) +
+  coord_cartesian(ylim=c((.7*min(mu)), 1.2*max(mu))) +
+  theme_bw()
+ 
+# melt the data into a ggplot friendly 'long' format
+require(reshape2)
+plotData <- melt(p, value.name = 'p')
+ 
+# plot each of the p-value distributions on a log scale
+options(scipen = 999) # 'turn off' scientific notation
+plt2 = ggplot(plotData, aes(x = p)) +
+    scale_x_log10(breaks=c(1, 0.05, 0.001), 
+                  labels=c(1, 0.05, 0.001)) +
+    geom_histogram(colour = "darkblue", fill = "white") +
+    geom_vline(xintercept = 0.05, colour='red') +
+    facet_grid(variable ~ .) +
+    labs(x = expression(Log[10]~P)) +
+    theme(axis.text.x = element_text(color='black', size=7))
+ 
+# arrange plots side by side and print
+grid.arrange(plt1, plt2, nrow=1)
+
+```
+
