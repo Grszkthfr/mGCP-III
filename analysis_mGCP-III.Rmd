@@ -437,39 +437,8 @@ rm(p.correctT, p.validT, p.boxplot3cues, p.boxplot1cue, p.subjectT,p.boxplotT, p
 
 ```{r inference}
 
-
-# Descriptives
-
-jmv::descriptives(
-    data = data,
-    vars = c(
-        "percent_valid",
-        "percent_correct",
-        "m_overall"))
-
+model = aov(rt ~ congruency * cueNum + Error(subject / (congruency*cueNum)), qr=FALSE, data = df.exp.l)
+            
 ```
 
 
-
- 
-```{r reste}
-
-# 
-# n        <- 60
-# m_co1cu1 <- .430
-# m_co0cu1 <- .450
-# m_co1cu3 <- .410
-# m_co0cu3 <- .470
-# 
-# sd       <- .11
-# 
-# df.pred <- data.frame(subject = 1:60, m_co1cu1 = rnorm(n, m_co1cu1, sd),m_co0cu1 = rnorm(n, m_co0cu1, sd), m_co1cu3 = rnorm(n, m_co1cu3, sd),m_co0cu3 = rnorm(n, m_co0cu3, sd)) %>% mutate(m_dif_cu1 = m_co1cu1 - m_co0cu1,    m_dif_cu3 = m_co1cu3 - m_co0cu3)
-# 
-# df.pred.sum <- df.pred %>% summarise_at(vars(m_co1cu1:m_co0cu3), funs(mean)) %>% gather(key = key, test =m_co1cu1:m_co0cu3)
-# 
-# write.csv(df.pred,paste0(pathData,"test.csv"), row.names = FALSE)
-
-
-```
- 
- 
