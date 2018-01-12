@@ -79,6 +79,26 @@ colnames(p) = c('congruency','cueNum','Interaction')
 
 ```
 
+```{r Calculate effect sizes}
+
+require(DescTools)
+
+etasq_cong <- 0
+etasq_int <- 0
+
+# calculate mean effect size over all simulations
+for (i in 1:length(mods$model))
+{
+  etasq_cong <- data.frame(EtaSq(mods$model[[i]], type=1))$eta.sq[1] + etasq_cong
+  etasq_int <- data.frame(EtaSq(mods$model[[i]], type=1))$eta.sq[3] + etasq_int
+}
+
+etasq_cong <- etasq_cong/nsims
+etasq_int <- etasq_int/nsims
+
+```
+
+
 ```{r Calculate and print the empirical power}
 
 power = apply(as.matrix(p), 2, 
@@ -117,6 +137,7 @@ plt2 = ggplot(plotData, aes(x = p)) +
  
 # arrange plots side by side and print
 grid.arrange(plt1, plt2, nrow=1)
+
 
 ```
 

@@ -63,13 +63,13 @@ The experiment takes place at the University of Wuerzburg. Participants get cred
 ## Sample size
 <!-- Describe the sample size of your study. How many units will be analyzed in the study? This could be the number of people, birds, classrooms, plots, interactions, or countries included. If the units are not individuals, then describe the size requirements for each unit. If you are using a clustered or multilevel design, how many units are you collecting at each level of the analysis? -->
 
-We aim for a total sample size of 60 participants and only stop recruiting when we achieve that number of participants. 
+We aim for a total sample size of 65 participants and only stop recruiting when we achieve that number of participants. 
 
 
 ## Sample size rationale
 <!-- This could include a power analysis or an arbitrary constraint such as time, money, or personnel. -->
 
-!!!With G*Power we aimed for .75 power to detect even a small effect size of .3 at the standard .05 alpha error probability for the predicted interaction between congruency and the number of cues.
+A power simulation showed that 65 participants are needed to achive a power of 80% to detect a small effect (derivated from general gaze cueing effects from literature, for details see simulation script) at the standard .05 alpha error probability for the predicted interaction between congruency and the number of cues.
 
 
 ## Stopping rule
@@ -85,29 +85,29 @@ There is no stopping rule.
 ## Manipulated variables
 <!-- Describe all variables you plan to manipulate and the levels or treatment arms of each variable. For observational studies and meta-analyses, simply state that this is not applicable. -->
 
-We manipulated the amount of gaze cues. There are two blocks, either with one gaze cue or with three gaze cues. In the group-block a trial displayed three faces at fixed positions, all three faces gazed at a specific location (right or left), where in 50% of the trials the target appears. All faces were centered around the glabella and had the same distance to the fixation cross.
-The individual-block contained only a single central face which gazed at the same location with the same proportion of valid and invalid trials.
-For half of the trials the inter stimulus intervall was 200ms and for the other half 500ms.
+We manipulated the amount of gaze cues and the ISI. There are two type of blocks, either with one gaze cue or with three gaze cues. In the group-block a trial displayed three cues at fixed positions, all three faces gaze at a specific location (right or left), where in 50% of the trials the target appears. All faces were centered around the glabella and had the same distance to the fixation cross.
+The individual-block contained only a single central face (cue) which gazed at the same location with the same proportion of valid and invalid trials. ISI is manipulated within blocks. 
 
 
 ## Measured variables
 <!-- Describe each variable that you will measure. This will include outcome measures, as well as any predictors or covariates that you will measure. You do not need to include any variables that you plan on collecting if they are not going to be included in the confirmatory analyses of this study. -->
 
 The outcome variable will be the reaction time in ms for each trial. In each trial participants have to discriminate the target.
-Questionnaires are:
-- Congruency rating for each condition
-!!!- SIAS
+
+Questionnaires (not for confirmatory analyses):
+- Congruency rating for each condition 
+- Social Interaction Anxiety Scale (SIAS, Stangier et al., 1999)
 - Autism-Questionnaire (AQ-K, Freitag et al., 2007)
-- Familiarity and attractiveness rating for each face on a five point scale (not for confirmatory analyses)
-- Demographic questionnaire (not for confirmatory analyses)
+- Familiarity and attractiveness rating for each face on a five point scale
+- Demographic questionnaire
 
 
 ## Indices
 <!-- If any measurements are  going to be combined into an index (or even a mean), what measures will you use and how will they be combined? Include either a formula or a precise description of your method. If your are using a more complicated statistical method to combine measures (e.g. a factor analysis), you can note that here but describe the exact method in the analysis plan section. -->
 
-The reaction time for each condition (1 vs. 3-gaze cues for congruent and incongruent trials) will be combined into means. 
+The reaction time for each condition (1 vs. 3-gaze cues for congruent and incongruent trials) will be combined into means to test whether a significant interaction fits the predicted one. 
 
-From the AQ-K we calculate the score as described by the manual.
+Questionnaire indices will be calculate according to the manuals.
 
 
 # Design Plan
@@ -149,7 +149,7 @@ To help you keep track of multiple analyses, you may label each for your referen
 
 A repeated measures ANOVA with two within factors (congruency and group size) will be conducted for the confirmatory hypothesis.
 
-We expect a significant main effect for congruency, as well as an significant interaction between congruency and group size. (for details see: [Follow-up analyses](xx Follow-up analyses))
+We expect a significant main effect for congruency, as well as an significant interaction between congruency and group size.
 
 
 ## Transformations
@@ -181,7 +181,7 @@ Participants have only 800 milliseconds to response to the cues. Later reactions
 ## Missing data
 <!-- How will you deal with incomplete or missing data? -->
 
-It is expected that participants will miss out on some trials (especially with the strict response window), but participants get excluded when they have less then 50% valid trials.
+It is expected that participants will miss out on some trials (especially with the strict response window), but participants get excluded when they have less then 75% valid trials.
 
 ## Assumptions (optional)
 <!-- If you are planning on testing the assumptions of the statistical tests included in your analysis plan, which assumptions will you test, how will you test them, what criteria will you use to make decisions based on that test, and what alternative statistical tests will you use? This may be an item where a decision tree could be helpful to plan and communicate the possibilities. -->
@@ -192,6 +192,7 @@ Enter your response here.
 ## Exploratory analyses (optional)
 <!-- If you plan to explore your data set to look for unexpected differences or relationships, you may describe those tests here. An exploratory test is any test where a prediction is not made up front, or there are multiple possible tests that you are going to use. A statistically significant finding in an exploratory test is a great way to form a new confirmatory hypothesis, which could be registered at a later time. -->
 
+We manipulated the ISI to take account for the discussion and ambigious results from literature whether inhibition effects (e.g IOR) occur in gaze cueing paradigms. We don't have explicit hypothesis regarding the IOR, but we would like to be able to control (for an explorative analysis) for very short ISI of 200ms (where only one saccade can be completed) vs. a longer ISI (with up to three saccades possible) for new confirmatory hypothesis.
 
 
 ## Analysis scripts (optional)
