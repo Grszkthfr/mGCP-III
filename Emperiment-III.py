@@ -95,7 +95,7 @@ def prepare():
     # if (keyAssignment == 1): instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key1>", responseKey1.upper()); instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key2>", responseKey2.upper())
     # else: instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key1>", responseKey2.upper()); instructionKeyAssignmentText = instructionKeyAssignmentText.replace("<key2>", responseKey1.upper())
 
-    window = visual.Window([1920, 1080], monitor="Office207", fullscr=False) # prepare a window for the experiment with resolution and specified monitor
+    window = visual.Window([1920, 1080], monitor="Office207", fullscr=True) # prepare a window for the experiment with resolution and specified monitor
     event.Mouse(visible=False)
 
 
