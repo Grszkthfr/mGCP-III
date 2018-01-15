@@ -87,7 +87,7 @@ congruency = factor(ifelse(unlist(map(strsplit(as.character(target_pos),"[[:punc
 
 #write.csv2(df.exp.l,paste0(pathData,"tidy.l.exp.mGCP-II.csv"), row.names = FALSE)
 
-rm(df.exp.l.raw)
+rm(raw.exp.l)
 
 ```
 
@@ -314,7 +314,7 @@ geom_split_violin <- function (mapping = NULL, data = NULL, stat = "ydensity", p
 #tidy.df.exp.l <- read.csv2(paste0(pathData,"tidy.l.df.mGCP-II.csv"))
 
 
-dscr.exp.congruency.and.cues <- df.exp.l %>% filter(correct_response == 1) %>% group_by(congruency, cue_num) %>% summarise_at(vars(rt), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), mean(., na.rm = TRUE), sd(., na.rm = TRUE), se=sd(., na.rm = TRUE)/sqrt(n())))
+dscr.exp.congruency.and.cues <- df.exp.l %>% filter(correct_response == "correct") %>% group_by(congruency, cue_num) %>% summarise_at(vars(rt), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), mean(., na.rm = TRUE), sd(., na.rm = TRUE), se=sd(., na.rm = TRUE)/sqrt(n())))
 
   
 p.validT <- df.exp.l %>% group_by(subject) %>%
@@ -332,7 +332,7 @@ p.validT <- df.exp.l %>% group_by(subject) %>%
 p.correctT <- df.exp.l %>%
   group_by(subject) %>%
   summarize(
-    percent_correct = round(table(correct_response == 1)[2]/192*100,1)
+    percent_correct = round(table(correct_response == "correct")[2]/384*100,1)
     ) %>%
   ggplot() +
   geom_histogram(aes(x= percent_correct), binwidth = 1) +
@@ -341,6 +341,10 @@ p.correctT <- df.exp.l %>%
   ggsave("plots/02_correctTrials.png")
 
 #p.correctT
+
+df.exp.l %>% 
+  ggplot() +
+  geom_histogram(aes(x=rt))
 
 p.pics <- df.exp.l %>%
   ggplot() +
@@ -401,7 +405,7 @@ p.congXtarPosXcueDir <- df.exp.l %>%
 #p.densityT
 
 p.boxplotT <- df.exp.l %>%
-  filter(correct_response == 1) %>%
+  filter(correct_response == "correct") %>%
   ggplot(aes(x = cue_num, y = rt, fill = congruency)) +
   geom_split_violin() +
   geom_boxplot(alpha =.25) +
@@ -409,7 +413,7 @@ p.boxplotT <- df.exp.l %>%
 
 #p.boxplotT
 
-p.subjectT <- df.exp.l %>% filter(correct_response == 1) %>%
+p.subjectT <- df.exp.l %>% filter(correct_response == "correct") %>%
   ggplot(aes(x = congruency, y = rt, color = congruency)) +
   geom_split_violin() +
   geom_boxplot(alpha =.25) +
@@ -423,7 +427,7 @@ p.boxplot1cue <- df.exp.l %>% filter(correct_response == 1, cue_num == "cue_1", 
 
 #p.boxplot1cue
 
-p.boxplot3cues <- df.exp.l %>% filter(correct_response == 1, cue_num == "cue_3", cue_dir == "cue_left") %>%
+p.boxplot3cues <- df.exp.l %>% filter(correct_response == "correct", cue_num == "cue_3", cue_dir == "cue_left") %>%
   ggplot(aes(x = congruency, y = rt, color = congruency)) +
   geom_split_violin() +
   geom_boxplot(alpha =.25) +
@@ -437,8 +441,9 @@ rm(p.correctT, p.validT, p.boxplot3cues, p.boxplot1cue, p.subjectT,p.boxplotT, p
 
 ```{r inference}
 
-model = aov(rt ~ congruency * cueNum + Error(subject / (congruency*cueNum)), qr=FALSE, data = df.exp.l)
-            
+model = aov(rt ~ congruency * cue_num + Error(subject / (congruency*cue_num)), qr=FALSE, data = df.exp.l)
+
+
 ```
 
 
