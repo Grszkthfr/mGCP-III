@@ -2,7 +2,7 @@ data/*
 
 plots/*
 
-.Rproj.user/*
+
 
 *.png
 
@@ -10,9 +10,5 @@ plots/*
 
 *.html
 
-.Rproj.user
-
-.Rhistory
 
 
-*.Rproj
