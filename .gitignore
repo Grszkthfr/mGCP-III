@@ -1,8 +1,9 @@
-data/*
 
 plots/*
 
-
+.Rproj.user/*
+.Rhistory
+.RData
 
 *.png
 
