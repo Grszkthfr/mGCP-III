@@ -1,5 +1,5 @@
 ---
-title: "Analysis Bachelorarbeit WS17 - mGCP-III"
+title: "Analyse Bachelorarbeit WS17 - mGCP-III"
 #output: html_notebook
 ---
 
@@ -64,7 +64,7 @@ test <- triallist %>%
 
 #df.exp.l <- read.csv2(paste0(pathData,"raw.l.exp.mGCP-III.csv"))
 
-df.exp.l <- raw.exp.l %>% filter(subject == 1 | subject ==2) %>% 
+df.exp.l <- raw.exp.l %>% 
   na_if(99) %>%
   mutate(
     rt = round(rt, 3),
