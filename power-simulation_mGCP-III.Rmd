@@ -1,6 +1,6 @@
 ---
 title: "Power Simulation - Bachelorarbeit WS17 - mGCP-III"
-output: html_notebook
+#output: html_notebook
 ---
 #from https://cognitivedatascientist.com/2015/12/14/power-simulation-in-r-the-repeated-measures-anova-5/
 
