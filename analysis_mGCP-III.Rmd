@@ -25,7 +25,7 @@ pathData <- "data/"
 #Getting the experimental rawdata (in long format) into R by making a temporal list with each *.csv-file, and then for each file "f" bind row to df.l
 
 tmp <- list.files(paste0(pathData,"raw"), pattern="*.csv")
-raw.exp.l = NULL
+raw.exp = NULL
 vp_tmp = NULL
 
 for (file in 1:length(tmp))
@@ -34,14 +34,14 @@ for (file in 1:length(tmp))
   # print(file)
   # print(nrow(vp_tmp))
   # print(table(vp_tmp$target_left[vp_tmp$cue_num == 3]))
-  raw.exp.l <- rbind(raw.exp.l, vp_tmp, deparse.level = 1, make.row.names = T)
+  raw.exp <- rbind(raw.exp, vp_tmp, deparse.level = 1, make.row.names = T)
   
   vp_tmp = NULL
 }
 
 
 #Saving complete raw data in long format to .csv
-#write.csv2(df.exp.l,paste0(pathData,"raw.l.exp.mGCP-III.csv"), row.names = FALSE)
+write.csv2(raw.exp,paste0(pathData,"raw.exp.mGCP-III.csv"), row.names = FALSE)
 
 #clear workspace
 rm(tmp, vp_tmp, file)
@@ -50,24 +50,24 @@ rm(tmp, vp_tmp, file)
 
 ```{r check triallist}
 
-triallist <- read.csv("triallist.csv")
-
-test <- triallist %>% 
-  group_by(pic_top,cue_dir,cue_num,target_id,target_pos) %>%
-  summarize(count = n())
-  
+# triallist <- read.csv("triallist.csv")
+# 
+# test <- triallist %>% 
+#   group_by(pic_top,cue_dir,cue_num,target_id,target_pos) %>%
+#   summarize(count = n())
+#   
 
 ```
 
  
 ```{r tidy experimental data}
 
-#df.exp.l <- read.csv2(paste0(pathData,"raw.l.exp.mGCP-III.csv"))
+#df.exp <- read.csv2(paste0(pathData,"raw.exp.mGCP-III.csv"))
 
-df.exp.l <- raw.exp.l %>% 
+df.exp <- raw.exp %>% 
   na_if(99) %>%
   mutate(
-    rt = round(rt, 3),
+    rt = round((rt*1000), 0),
     face_left = as.factor(unlist(map(strsplit(as.character(face_left),"[[:punct:]]"), ~.x[1]))),
     #face_left = face_left %>%  as.character() %>%  strsplit("[[:punct:]]") %>%  map(~.x[1]) %>% unlist(), 
     face_top = as.factor(unlist(map(strsplit(as.character(face_top),"[[:punct:]]"), ~.x[1]))),
@@ -85,18 +85,26 @@ congruency = factor(ifelse(unlist(map(strsplit(as.character(target_pos),"[[:punc
   select(experiment:face_right,face_combo,everything()) %>% 
   select(-rt, everything())# reorder 
 
-#write.csv2(df.exp.l,paste0(pathData,"tidy.l.exp.mGCP-II.csv"), row.names = FALSE)
+#write.csv2(df.exp,paste0(pathData,"df.exp.mGCP-III.csv"), row.names = FALSE)
 
-rm(raw.exp.l)
+#rm(raw.exp)
 
 ```
 
 ```{r tidy questionnaire data}
 
-df.quest.l.raw <- read.csv2(paste0(pathData,"Fragebögen_fertig.csv"))
+raw.que <- read.csv(paste0(pathData,"raw.que.mGCP-III.csv"))
 
-tidy.df.quest.w <- df.quest.l.raw %>% 
+df.que <- raw.que %>% 
   na_if(99) %>% 
+  rename(
+    sex= Geschlecht,
+    p26a = pic1a,
+    p26v = pic1v,
+    p61a = pic2a,
+    p61v = pic2v,
+    p37a = pic3a,
+    p37v = pic3v) %>% 
   mutate_at(
     vars(aqk1, aqk3, aqk5, aqk6, aqk7, aqk9, aqk10, aqk11, aqk14, aqk16, aqk17, aqk18, aqk20, aqk22, aqk23, aqk24, aqk26, aqk28, aqk31, aqk32, aqk33),
     funs(5 - .)) %>% # . is placeholder for variable specified in vars()
@@ -111,13 +119,13 @@ tidy.df.quest.w <- df.quest.l.raw %>%
     aq_imagination = (aqk3 + aqk5 + aqk6 + aqk9 + aqk16 + aqk17 + aqk18 + aqk22 + aqk23 + aqk26 + aqk32 + aqk33),
     aq_communication = (aqk2 + aqk4 + aqk12 + aqk15 + aqk19 + aqk21 + aqk25 + aqk27 + aqk29 + aqk30),
     aq_sumscore = (aq_social + aq_imagination + aq_communication)) %>% 
-  rename(
-    p26a = pic1a,
-    p26v = pic1v,
-    p61a = pic2a,
-    p61v = pic2v,
-    p37a = pic3a,
-    p37v = pic3v) %>%
+  mutate_at(
+    vars(siasd5, siasd9, siasd11),
+    funs(4 - .)) %>%
+  mutate_at(
+     vars(aqk1:aqk33),
+     funs(ifelse(is.na(.), round(mean(., na.rm = T),1), .))) %>% # replace NAs in SIAS with means
+  mutate(sias = siasd1 + siasd2 + siasd3 + siasd4 + siasd5 + siasd6 + siasd7 + siasd8 + siasd9 + siasd10 + siasd11 + siasd12 + siasd13 + siasd14 + siasd15 + siasd16 + siasd17 + siasd18 + siasd19 + siasd20)%>% 
   mutate_at(
     vars(vp, study),
     funs(as.factor)) %>% 
@@ -125,28 +133,27 @@ tidy.df.quest.w <- df.quest.l.raw %>%
     vars(research, strategy),
     funs(as.character))
 
-#write.csv2(tidy.df.quest.w,paste0(pathData,"tidy.w.que.mGCP-II.csv"), row.names = FALSE)
+write.csv2(df.que,paste0(pathData,"df.que.mGCP-II.csv"), row.names = FALSE)
 
 
-rm(df.quest.l.raw)
+#rm(raw.que)
 
   
 ```
 
 ```{r jamovi.df}
 
-#tidy.df.exp.l <- read.csv2(paste0(pathData,"tidy.l.df.mGCP-II.csv"))
 
-tmp1.df.jamovi <- tidy.df.exp.l %>%
+tmp1.df.jamovi <- df.exp %>%
   group_by(subject) %>%
   summarize(
     trials = n(),
     percent_valid = round(sum(!is.na(rt))/trials*100,1),
-    percent_correct = round(table(correct_response == "correct")[2]/192*100,1),
+    percent_correct = round(table(correct_response == "correct")[2]/max(trials)*100,1),
     m_overall = round(mean(rt, na.rm = T),3))
 
 
-tmp2.df.jamovi <- tidy.df.exp.l %>%
+tmp2.df.jamovi <- df.exp %>%
   filter(correct_response == "correct") %>%
   mutate(key = ifelse(congruency == "congruent",
                       "m_co1","m_co0")) %>%
@@ -155,9 +162,9 @@ tmp2.df.jamovi <- tidy.df.exp.l %>%
   spread(key, m) %>% 
   mutate(m_dif_overall = m_co1 - m_co0)
 
-tmp3.df.jamovi <- tidy.df.exp.l %>%
+tmp3.df.jamovi <- df.exp %>%
   filter(correct_response == "correct") %>%
-  mutate(key = ifelse(cue_num == "three cues",
+  mutate(key = ifelse(cue_num == "cue_1",
                       ifelse(congruency == "congruent",
                              "m_co1cu3","m_co0cu3"),
                       ifelse(congruency == "congruent",
@@ -169,9 +176,9 @@ tmp3.df.jamovi <- tidy.df.exp.l %>%
     m_dif_cu1 = m_co1cu1 - m_co0cu1,
     m_dif_cu3 = m_co1cu3 - m_co0cu3)
 
-tmp4.df.jamovi <- tidy.df.exp.l %>%
+tmp4.df.jamovi <- df.exp %>%
   filter(correct_response == "correct") %>% 
-  mutate(key = ifelse(left_cue == "right cue",
+  mutate(key = ifelse(cue_dir == "cue_right",
                       ifelse(congruency == "congruent",
                              "m_co1cuR","m_co0cuR"),
                       ifelse(congruency == "congruent",
@@ -183,32 +190,32 @@ tmp4.df.jamovi <- tidy.df.exp.l %>%
     m_dif_cuL = m_co1cuL - m_co0cuL,
     m_dif_cuR = m_co1cuR - m_co0cuR)
 
-tmp4b.df.jamovi <- tidy.df.exp.l %>%
+tmp4b.df.jamovi <- df.exp %>%
   filter(correct_response == "correct") %>% 
-  mutate(key = ifelse(left_cue == "right cue",
-                      #Yes: "right cue"
-                      ifelse(cue_num == "three cues",
-                             #Yes: "three cues"
+  mutate(key = ifelse(cue_dir == "cue_right",
+                      #Yes: "cue_right"
+                      ifelse(cue_num == "cue_1",
+                             #Yes: "cue_3"
                              ifelse(congruency == "congruent",
                                     # Yes: "congruent"
                                     "m_co1cu3R",
                                     #No:
                                     "m_co0cu3R"),
-                             #No: "three cues"
+                             #No: "cue_3"
                              ifelse(congruency == "congruent",
                                     #Yes: "congruent"
                                     "m_co1cu1R",
                                     #No: "congruent"
                                     "m_co0cu1R")),
-                      #No: "right cue"
-                      ifelse(cue_num == "three cues",
-                             #Yes: "three cues"
+                      #No: "cue_right"
+                      ifelse(cue_num == "cue_3",
+                             #Yes: "cue_3"
                              ifelse(congruency == "congruent",
                                     #Yes: "congruent"
                                     "m_co1cu3L",
                                     #No: "congruent"
                                     "m_co0cu3L"),
-                             #No: "three cues"
+                             #No: "cue_3"
                              ifelse(congruency == "congruent",
                                     #Yes: "congruent"
                                     "m_co1cu1L",
@@ -223,13 +230,13 @@ tmp4b.df.jamovi <- tidy.df.exp.l %>%
     m_dif_cu3L = m_co1cu3L - m_co0cu3L,
     m_dif_cu3R = m_co1cu3R - m_co0cu3R)
 
-tmp5.df.jamovi <- tidy.df.exp.l %>% 
-  filter(correct_response == "correct", cue_num == "one cue") %>% 
-  mutate(key = ifelse(pic_top == 26, ifelse(congruency == "congruent",
+tmp5.df.jamovi <- df.exp %>% 
+  filter(correct_response == "correct", cue_num == "cue_1") %>% 
+  mutate(key = ifelse(face_top == 26, ifelse(congruency == "congruent",
                                             "m_co1p26", "m_co0p26"),
-                 ifelse(pic_top == 37, ifelse(congruency == "congruent",
+                 ifelse(face_top == 37, ifelse(congruency == "congruent",
                                               "m_co1p37", "m_co0p37"),
-                        ifelse(pic_top == 61, ifelse(congruency == "congruent",
+                        ifelse(face_top == 61, ifelse(congruency == "congruent",
                                                      "m_co1p61", "m_co0p61"),NA)))) %>% 
   group_by(subject, key) %>%
   summarise(m = round(mean(rt, na.rm = TRUE),3)) %>%
@@ -239,29 +246,29 @@ tmp5.df.jamovi <- tidy.df.exp.l %>%
     m_dif_cu1_37 = m_co1p37 - m_co0p37,
     m_dif_cu1_61 = m_co1p61 - m_co0p61)
 
-tmp6.df.jamovi <- tidy.df.exp.l %>%
-  filter(correct_response == "correct",  cue_num == "three cues") %>%
-  mutate(key = ifelse(pic_combo == 1,
+tmp6.df.jamovi <- df.exp %>%
+  filter(correct_response == "correct",  cue_num == "cue_3") %>%
+  mutate(key = ifelse(face_combo == 1,
                       ifelse(congruency == "congruent",
                                              "m_co1pc1","m_co0pc1"),
-                      ifelse(pic_combo == 2,
+                      ifelse(face_combo == 2,
                              ifelse(congruency == "congruent",
                                                     "m_co1pc2","m_co0pc2"),
-                             ifelse(pic_combo == 3,
+                             ifelse(face_combo == 3,
                                     ifelse(congruency == "congruent",
                                                            "m_co1pc3","m_co0pc3"),
-                                    ifelse(pic_combo == 4,
+                                    ifelse(face_combo == 4,
                                            ifelse(congruency == "congruent",
                                                                   "m_co1pc4","m_co0pc4"),
-                                           ifelse(pic_combo == 5,
+                                           ifelse(face_combo == 5,
                                                   ifelse(congruency == "congruent",
                                                                          "m_co1pc5","m_co0pc5"),
-                                                  ifelse(pic_combo == 6,
+                                                  ifelse(face_combo == 6,
                                                          ifelse(congruency == "congruent",
                                                                                 "m_co1pc6","m_co0pc6"),NA))))))) %>%
-  group_by(subject, key, pic_combo) %>% 
+  group_by(subject, key, face_combo) %>% 
   summarise(m = round(mean(rt, na.rm = TRUE),3)) %>%
-  select(-pic_combo) %>% 
+  select(-face_combo) %>% 
   spread(key, m) %>% 
   mutate(
     m_dif_cu3_pc1 = m_co1pc1 - m_co0pc1,
@@ -272,7 +279,7 @@ tmp6.df.jamovi <- tidy.df.exp.l %>%
     m_dif_cu3_pc6 = m_co1pc6 - m_co0pc6)
 
 
-df.jamovi <- bind_cols(tidy.df.quest.w[c(1,45:46)], tmp1.df.jamovi[-1], tmp2.df.jamovi[-1], tmp3.df.jamovi[-1], tmp4.df.jamovi[-1],tmp4b.df.jamovi[-1], tmp5.df.jamovi[-1], tmp6.df.jamovi[-1], tidy.df.quest.w[c(35:42, 49:52, 43:44)])
+df.jamovi <- bind_cols(df.que[c(1, 65,68,66:67)], tmp1.df.jamovi[-1], tmp2.df.jamovi[-1], tmp3.df.jamovi[-1], tmp4.df.jamovi[-1],tmp4b.df.jamovi[-1], tmp5.df.jamovi[-1], tmp6.df.jamovi[-1], df.que[c(2:34, 70:73, 35:54, 74, 55:62, 63, 64, 69)])
   
 #write.csv(df.jamovi,paste0(pathData,"tidy.w.df.mGCP-II.csv"), row.names = FALSE)
 
@@ -311,13 +318,13 @@ geom_split_violin <- function (mapping = NULL, data = NULL, stat = "ydensity", p
 
 ```{r descriptives & plots}
 
-#tidy.df.exp.l <- read.csv2(paste0(pathData,"tidy.l.df.mGCP-II.csv"))
+#df.exp <- read.csv2(paste0(pathData,"tidy.l.df.mGCP-II.csv"))
 
 
-dscr.exp.congruency.and.cues <- df.exp.l %>% filter(correct_response == "correct") %>% group_by(congruency, cue_num) %>% summarise_at(vars(rt), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), mean(., na.rm = TRUE), sd(., na.rm = TRUE), se=sd(., na.rm = TRUE)/sqrt(n())))
+dscr.congruency.and.cues <- df.exp %>% filter(correct_response == "correct") %>% group_by(congruency, cue_num) %>% summarise_at(vars(rt), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), mean(., na.rm = TRUE), sd(., na.rm = TRUE), se=sd(., na.rm = TRUE)/sqrt(n())))
 
   
-p.validT <- df.exp.l %>% group_by(subject) %>%
+p.validT <- df.exp %>% group_by(subject) %>%
   summarize(
     trials = n(),
     percent_valid = round(sum(!is.na(rt))/trials*100,1)) %>%
@@ -329,7 +336,7 @@ p.validT <- df.exp.l %>% group_by(subject) %>%
 
 #p.validT
 
-p.correctT <- df.exp.l %>%
+p.correctT <- df.exp %>%
   group_by(subject) %>%
   summarize(
     percent_correct = round(table(correct_response == "correct")[2]/384*100,1)
@@ -342,11 +349,11 @@ p.correctT <- df.exp.l %>%
 
 #p.correctT
 
-df.exp.l %>% 
+df.exp %>% 
   ggplot() +
   geom_histogram(aes(x=rt))
 
-p.pics <- df.exp.l %>%
+p.pics <- df.exp %>%
   ggplot() +
   geom_bar(aes(x=target_id)) +
   facet_wrap(~ cue_num) +
@@ -354,7 +361,7 @@ p.pics <- df.exp.l %>%
 
 #p.pics
 
-p.tarPosXCueDir <- df.exp.l %>%
+p.tarPosXCueDir <- df.exp %>%
   ggplot() +
   geom_bar(aes(x=target_pos)) +
   facet_wrap( ~ cue_dir) +
@@ -362,7 +369,7 @@ p.tarPosXCueDir <- df.exp.l %>%
 
 #p.tarPosXCueDir  
   
-p.congXcueDir <- df.exp.l %>%
+p.congXcueDir <- df.exp %>%
   ggplot() +
   geom_bar(aes(x=congruency)) +
   facet_wrap( ~ cue_dir) +
@@ -370,7 +377,7 @@ p.congXcueDir <- df.exp.l %>%
 
 #p.congXcueDir
 
-p.congXtarPos <- df.exp.l %>%
+p.congXtarPos <- df.exp %>%
   ggplot() +
   geom_bar(aes(x=congruency)) +
   facet_wrap(~ target_pos) +
@@ -378,7 +385,7 @@ p.congXtarPos <- df.exp.l %>%
 
 #p.congXtarPos 
 
-p.congXtarPosXcueDir <- df.exp.l %>%
+p.congXtarPosXcueDir <- df.exp %>%
   ggplot() +
   geom_bar(aes(x=congruency )) +
   facet_wrap(target_pos ~ cue_dir) +
@@ -386,7 +393,7 @@ p.congXtarPosXcueDir <- df.exp.l %>%
 
 #p.congXtarPosXcueDir
 
- # df.exp.l %>% filter(correct_response == 1) %>%
+ # df.exp %>% filter(correct_response == 1) %>%
  #   group_by(congruency, cue_num) %>%
  #   summarise_at(vars(rt), funs(min(., na.rm = TRUE), max(., na.rm = TRUE), mean(., na.rm = TRUE), sd(., na.rm = TRUE), se=sd(., na.rm = TRUE)/sqrt(n()))) %>%
  #   ggplot(aes(x = cue_num, y = mean, fill = congruency)) +
@@ -396,15 +403,15 @@ p.congXtarPosXcueDir <- df.exp.l %>%
  #         ymax=dscr.exp.congruency.and.cues$mean + dscr.exp.congruency.and.cues$se), width=.2, position=position_dodge(.9))
 
 # 
-# p.densityT <- df.exp.l %>% 
+# p.densityT <- df.exp %>% 
 #   ggplot() +
 #   geom_density(aes(x=rt, fill = congruency), alpha=.3, fill = "grey") +
 #   geom_vline(aes(xintercept=mean(rt, na.rm=T)), color = "red", linetype="dashed", size=1) +
-#   geom_vline(data = filter(df.exp.l, congruency == "incongruent"), aes(xintercept=mean(rt, na.rm=T)), color = "blue", linetype="dashed", size=1)
+#   geom_vline(data = filter(df.exp, congruency == "incongruent"), aes(xintercept=mean(rt, na.rm=T)), color = "blue", linetype="dashed", size=1)
 
 #p.densityT
 
-p.boxplotT <- df.exp.l %>%
+p.boxplotT <- df.exp %>%
   filter(correct_response == "correct") %>%
   ggplot(aes(x = cue_num, y = rt, fill = congruency)) +
   geom_split_violin() +
@@ -413,25 +420,25 @@ p.boxplotT <- df.exp.l %>%
 
 #p.boxplotT
 
-p.subjectT <- df.exp.l %>% filter(correct_response == "correct") %>%
+p.subjectT <- df.exp %>% filter(correct_response == "correct") %>%
   ggplot(aes(x = congruency, y = rt, color = congruency)) +
   geom_split_violin() +
   geom_boxplot(alpha =.25) +
   facet_wrap(~ subject) 
 
-p.boxplot1cue <- df.exp.l %>% filter(correct_response == 1, cue_num == "cue_1", cue_dir == "cue_left" ) %>%
+p.boxplot1cue <- df.exp %>% filter(correct_response == 1, cue_num == "cue_1", cue_dir == "cue_left" ) %>%
   ggplot(aes(x = congruency, y = rt, color = congruency)) +
   geom_split_violin() +
   geom_boxplot(alpha =.25) +
-  facet_wrap(~ pic_top)
+  facet_wrap(~ face_top)
 
 #p.boxplot1cue
 
-p.boxplot3cues <- df.exp.l %>% filter(correct_response == "correct", cue_num == "cue_3", cue_dir == "cue_left") %>%
+p.boxplot3cues <- df.exp %>% filter(correct_response == "correct", cue_num == "cue_3", cue_dir == "cue_left") %>%
   ggplot(aes(x = congruency, y = rt, color = congruency)) +
   geom_split_violin() +
   geom_boxplot(alpha =.25) +
-  facet_wrap(~ pic_combo)
+  facet_wrap(~ face_combo)
 
 #p.boxplot3cues
 
@@ -441,7 +448,7 @@ rm(p.correctT, p.validT, p.boxplot3cues, p.boxplot1cue, p.subjectT,p.boxplotT, p
 
 ```{r inference}
 
-model = aov(rt ~ congruency * cue_num + Error(subject / (congruency*cue_num)), qr=FALSE, data = df.exp.l)
+model = aov(rt ~ congruency * cue_num + Error(subject / (congruency*cue_num)), qr=FALSE, data = df.exp)
 
 
 ```
