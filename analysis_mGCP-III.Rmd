@@ -32,7 +32,7 @@ for (file in 1:length(tmp))
 {
   vp_tmp <- read.table(paste0(pathData,"raw/",tmp[file]), header = T, sep=",", dec=".")
   # print(file)
-  # print(nrow(vp_tmp))
+   #print(nrow(vp_tmp))
   # print(table(vp_tmp$target_left[vp_tmp$cue_num == 3]))
   raw.exp <- rbind(raw.exp, vp_tmp, deparse.level = 1, make.row.names = T)
   
@@ -41,10 +41,12 @@ for (file in 1:length(tmp))
 
 
 #Saving complete raw data in long format to .csv
-write.csv2(raw.exp,paste0(pathData,"raw.exp.mGCP-III.csv"), row.names = FALSE)
+#write.csv2(raw.exp,paste0(pathData,"raw.exp.mGCP-III.csv"), row.names = FALSE)
 
 #clear workspace
 rm(tmp, vp_tmp, file)
+rm(raw.exp)
+
 
 ```
 
@@ -62,7 +64,7 @@ rm(tmp, vp_tmp, file)
  
 ```{r tidy experimental data}
 
-#df.exp <- read.csv2(paste0(pathData,"raw.exp.mGCP-III.csv"))
+raw.exp <- read.csv2(paste0(pathData,"raw.exp.mGCP-III.csv"))
 
 df.exp <- raw.exp %>% 
   na_if(99) %>%
@@ -87,7 +89,6 @@ congruency = factor(ifelse(unlist(map(strsplit(as.character(target_pos),"[[:punc
 
 #write.csv2(df.exp,paste0(pathData,"df.exp.mGCP-III.csv"), row.names = FALSE)
 
-#rm(raw.exp)
 
 ```
 
@@ -115,17 +116,17 @@ df.que <- raw.que %>%
      vars(aqk1:aqk33),
      funs(ifelse(is.na(.), round(mean(., na.rm = T),1), .))) %>% # replace NAs in AQ-K with means 
   mutate(
-    aq_social = (aqk1 + aqk7 + aqk8 + aqk10 + aqk11 + aqk13 + aqk14 + aqk20 + aqk24 + aqk28 + aqk31),
-    aq_imagination = (aqk3 + aqk5 + aqk6 + aqk9 + aqk16 + aqk17 + aqk18 + aqk22 + aqk23 + aqk26 + aqk32 + aqk33),
-    aq_communication = (aqk2 + aqk4 + aqk12 + aqk15 + aqk19 + aqk21 + aqk25 + aqk27 + aqk29 + aqk30),
-    aq_sumscore = (aq_social + aq_imagination + aq_communication)) %>% 
+    aqk_social = (aqk1 + aqk7 + aqk8 + aqk10 + aqk11 + aqk13 + aqk14 + aqk20 + aqk24 + aqk28 + aqk31),
+    aqk_imagination = (aqk3 + aqk5 + aqk6 + aqk9 + aqk16 + aqk17 + aqk18 + aqk22 + aqk23 + aqk26 + aqk32 + aqk33),
+    aqk_communication = (aqk2 + aqk4 + aqk12 + aqk15 + aqk19 + aqk21 + aqk25 + aqk27 + aqk29 + aqk30),
+    aqk_sumscore = (aqk_social + aqk_imagination + aqk_communication)) %>% 
   mutate_at(
     vars(siasd5, siasd9, siasd11),
     funs(4 - .)) %>%
   mutate_at(
      vars(aqk1:aqk33),
      funs(ifelse(is.na(.), round(mean(., na.rm = T),1), .))) %>% # replace NAs in SIAS with means
-  mutate(sias = siasd1 + siasd2 + siasd3 + siasd4 + siasd5 + siasd6 + siasd7 + siasd8 + siasd9 + siasd10 + siasd11 + siasd12 + siasd13 + siasd14 + siasd15 + siasd16 + siasd17 + siasd18 + siasd19 + siasd20)%>% 
+  mutate(sias_sumscore = siasd1 + siasd2 + siasd3 + siasd4 + siasd5 + siasd6 + siasd7 + siasd8 + siasd9 + siasd10 + siasd11 + siasd12 + siasd13 + siasd14 + siasd15 + siasd16 + siasd17 + siasd18 + siasd19 + siasd20)%>% 
   mutate_at(
     vars(vp, study),
     funs(as.factor)) %>% 
@@ -133,10 +134,10 @@ df.que <- raw.que %>%
     vars(research, strategy),
     funs(as.character))
 
-write.csv2(df.que,paste0(pathData,"df.que.mGCP-II.csv"), row.names = FALSE)
+#write.csv2(df.que,paste0(pathData,"df.que.mGCP-II.csv"), row.names = FALSE)
 
 
-#rm(raw.que)
+rm(raw.que)
 
   
 ```
@@ -150,7 +151,7 @@ tmp1.df.jamovi <- df.exp %>%
     trials = n(),
     percent_valid = round(sum(!is.na(rt))/trials*100,1),
     percent_correct = round(table(correct_response == "correct")[2]/max(trials)*100,1),
-    m_overall = round(mean(rt, na.rm = T),3))
+    m_overall = round(mean(rt, na.rm = T),0))
 
 
 tmp2.df.jamovi <- df.exp %>%
@@ -158,7 +159,7 @@ tmp2.df.jamovi <- df.exp %>%
   mutate(key = ifelse(congruency == "congruent",
                       "m_co1","m_co0")) %>%
   group_by(subject, key) %>% 
-  summarise(m = round(mean(rt, na.rm = TRUE),3)) %>%
+  summarise(m = round(mean(rt, na.rm = TRUE),0)) %>%
   spread(key, m) %>% 
   mutate(m_dif_overall = m_co1 - m_co0)
 
@@ -170,7 +171,7 @@ tmp3.df.jamovi <- df.exp %>%
                       ifelse(congruency == "congruent",
                              "m_co1cu1","m_co0cu1"))) %>%
   group_by(subject, key) %>% 
-  summarise(m = round(mean(rt, na.rm = TRUE),3)) %>%
+  summarise(m = round(mean(rt, na.rm = TRUE),0)) %>%
   spread(key, m) %>% 
   mutate(
     m_dif_cu1 = m_co1cu1 - m_co0cu1,
@@ -185,7 +186,7 @@ tmp4.df.jamovi <- df.exp %>%
                         ifelse(face_top == 61, ifelse(congruency == "congruent",
                                                      "m_co1p61", "m_co0p61"),NA)))) %>% 
   group_by(subject, key) %>%
-  summarise(m = round(mean(rt, na.rm = TRUE),3)) %>%
+  summarise(m = round(mean(rt, na.rm = TRUE),0)) %>%
   spread(key, m) %>% 
   mutate(
     m_dif_cu1_26 = m_co1p26 - m_co0p26,
@@ -213,7 +214,7 @@ tmp5.df.jamovi <- df.exp %>%
                                                          ifelse(congruency == "congruent",
                                                                                 "m_co1pc6","m_co0pc6"),NA))))))) %>%
   group_by(subject, key, face_combo) %>% 
-  summarise(m = round(mean(rt, na.rm = TRUE),3)) %>%
+  summarise(m = round(mean(rt, na.rm = TRUE),0)) %>%
   select(-face_combo) %>% 
   spread(key, m) %>% 
   mutate(
@@ -227,9 +228,10 @@ tmp5.df.jamovi <- df.exp %>%
 
 df.jamovi <- bind_cols(df.que[c(1, 65,68,66:67)], tmp1.df.jamovi[-1], tmp2.df.jamovi[-1], tmp3.df.jamovi[-1], tmp4.df.jamovi[-1], tmp5.df.jamovi[-1], df.que[c(2:34, 70:73, 35:54, 74, 55:62, 63, 64, 69)])
   
-write.csv(df.jamovi,paste0(pathData,"tidy.w.df.mGCP-II.csv"), row.names = FALSE)
+#write.csv(df.jamovi,paste0(pathData,"df.jamovi.mGCP-II.csv"), row.names = FALSE)
 
 rm(tmp1.df.jamovi, tmp2.df.jamovi, tmp3.df.jamovi, tmp4.df.jamovi, tmp5.df.jamovi)
+#rm(df.jamovi)
 
 ```
 
@@ -285,7 +287,7 @@ p.validT <- df.exp %>% group_by(subject) %>%
 p.correctT <- df.exp %>%
   group_by(subject) %>%
   summarize(
-    percent_correct = round(table(correct_response == "correct")[2]/384*100,1)
+    percent_correct = round(table(correct_response == "correct")[2]/(max(trials))*100,1)
     ) %>%
   ggplot() +
   geom_histogram(aes(x= percent_correct), binwidth = 1) +
