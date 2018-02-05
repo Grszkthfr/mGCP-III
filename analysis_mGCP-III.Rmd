@@ -176,61 +176,7 @@ tmp3.df.jamovi <- df.exp %>%
     m_dif_cu1 = m_co1cu1 - m_co0cu1,
     m_dif_cu3 = m_co1cu3 - m_co0cu3)
 
-tmp4.df.jamovi <- df.exp %>%
-  filter(correct_response == "correct") %>% 
-  mutate(key = ifelse(cue_dir == "cue_right",
-                      ifelse(congruency == "congruent",
-                             "m_co1cuR","m_co0cuR"),
-                      ifelse(congruency == "congruent",
-                             "m_co1cuL","m_co0cuL"))) %>%
-  group_by(subject, key) %>% 
-  summarise(m = round(mean(rt, na.rm = TRUE),3)) %>%
-  spread(key, m) %>% 
-  mutate(
-    m_dif_cuL = m_co1cuL - m_co0cuL,
-    m_dif_cuR = m_co1cuR - m_co0cuR)
-
-tmp4b.df.jamovi <- df.exp %>%
-  filter(correct_response == "correct") %>% 
-  mutate(key = ifelse(cue_dir == "cue_right",
-                      #Yes: "cue_right"
-                      ifelse(cue_num == "cue_1",
-                             #Yes: "cue_3"
-                             ifelse(congruency == "congruent",
-                                    # Yes: "congruent"
-                                    "m_co1cu3R",
-                                    #No:
-                                    "m_co0cu3R"),
-                             #No: "cue_3"
-                             ifelse(congruency == "congruent",
-                                    #Yes: "congruent"
-                                    "m_co1cu1R",
-                                    #No: "congruent"
-                                    "m_co0cu1R")),
-                      #No: "cue_right"
-                      ifelse(cue_num == "cue_3",
-                             #Yes: "cue_3"
-                             ifelse(congruency == "congruent",
-                                    #Yes: "congruent"
-                                    "m_co1cu3L",
-                                    #No: "congruent"
-                                    "m_co0cu3L"),
-                             #No: "cue_3"
-                             ifelse(congruency == "congruent",
-                                    #Yes: "congruent"
-                                    "m_co1cu1L",
-                                    #No: "congruent"
-                                    "m_co0cu1L")))) %>%
-  group_by(subject, key) %>% 
-  summarise(m = round(mean(rt, na.rm = TRUE),3)) %>%
-  spread(key, m) %>% 
-  mutate(
-    m_dif_cu1L = m_co1cu1L - m_co0cu1L,
-    m_dif_cu1R = m_co1cu1R - m_co0cu1R,
-    m_dif_cu3L = m_co1cu3L - m_co0cu3L,
-    m_dif_cu3R = m_co1cu3R - m_co0cu3R)
-
-tmp5.df.jamovi <- df.exp %>% 
+tmp4.df.jamovi <- df.exp %>% 
   filter(correct_response == "correct", cue_num == "cue_1") %>% 
   mutate(key = ifelse(face_top == 26, ifelse(congruency == "congruent",
                                             "m_co1p26", "m_co0p26"),
@@ -246,7 +192,7 @@ tmp5.df.jamovi <- df.exp %>%
     m_dif_cu1_37 = m_co1p37 - m_co0p37,
     m_dif_cu1_61 = m_co1p61 - m_co0p61)
 
-tmp6.df.jamovi <- df.exp %>%
+tmp5.df.jamovi <- df.exp %>%
   filter(correct_response == "correct",  cue_num == "cue_3") %>%
   mutate(key = ifelse(face_combo == 1,
                       ifelse(congruency == "congruent",
@@ -279,11 +225,11 @@ tmp6.df.jamovi <- df.exp %>%
     m_dif_cu3_pc6 = m_co1pc6 - m_co0pc6)
 
 
-df.jamovi <- bind_cols(df.que[c(1, 65,68,66:67)], tmp1.df.jamovi[-1], tmp2.df.jamovi[-1], tmp3.df.jamovi[-1], tmp4.df.jamovi[-1],tmp4b.df.jamovi[-1], tmp5.df.jamovi[-1], tmp6.df.jamovi[-1], df.que[c(2:34, 70:73, 35:54, 74, 55:62, 63, 64, 69)])
+df.jamovi <- bind_cols(df.que[c(1, 65,68,66:67)], tmp1.df.jamovi[-1], tmp2.df.jamovi[-1], tmp3.df.jamovi[-1], tmp4.df.jamovi[-1], tmp5.df.jamovi[-1], df.que[c(2:34, 70:73, 35:54, 74, 55:62, 63, 64, 69)])
   
-#write.csv(df.jamovi,paste0(pathData,"tidy.w.df.mGCP-II.csv"), row.names = FALSE)
+write.csv(df.jamovi,paste0(pathData,"tidy.w.df.mGCP-II.csv"), row.names = FALSE)
 
-rm(tmp1.df.jamovi, tmp2.df.jamovi, tmp3.df.jamovi, tmp4.df.jamovi, tmp4b.df.jamovi, tmp5.df.jamovi, tmp6.df.jamovi)
+rm(tmp1.df.jamovi, tmp2.df.jamovi, tmp3.df.jamovi, tmp4.df.jamovi, tmp5.df.jamovi)
 
 ```
 
