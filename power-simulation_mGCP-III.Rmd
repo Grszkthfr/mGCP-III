@@ -13,7 +13,7 @@ mu = c(500, 515, 495, 520) #true effects: cong1 incong1 cong3 incong 3
 sigma = 45  # population standard deviation
 rho = 0.9 # correlation between repeated measures, based on previous lab-intern studies
 nsubs = 65 # how many subjects?
-nsims = 5000 # how many simulation replicates?
+nsims = 500 # how many simulation replicates?
 
 # create 2 factors representing the 2 independent variables
 cond = data.frame(
@@ -69,6 +69,8 @@ require(broom)
 mods <- df %>% 
   group_by(simID) %>% 
     do(model = aov(y ~ congruency * cueNum + Error(subject / (congruency*cueNum)), qr=FALSE, data = .)) 
+str(mods$model[[1]])
+
  
 # extract p-values for each effect and store in a data frame
 p = data.frame(
