@@ -1,0 +1,5 @@
+experiment,subject,date,block,trial,face_left,face_top,face_right,cue_dir,target_id,target_pos,cue_num,isi,correct_response,rt
+mGCP-III,9999,2018-03-09_08:51,1,1,61_Caucasian_female_neutral_left.jpg,37_Caucasian_female_neutral_left.jpg,26_Caucasian_female_neutral_left.jpg,cue_left,target_E,target_right,cue_3,500ms,correct,0.1801843514695065
+mGCP-III,9999,2018-03-09_08:51,1,2,37_Caucasian_female_neutral_right.jpg,26_Caucasian_female_neutral_right.jpg,61_Caucasian_female_neutral_right.jpg,cue_right,target_F,target_left,cue_3,200ms,incorrect,0.37509343202691525
+mGCP-III,9999,2018-03-09_08:51,1,3,61_Caucasian_female_neutral_right.jpg,26_Caucasian_female_neutral_right.jpg,37_Caucasian_female_neutral_right.jpg,cue_right,target_E,target_right,cue_3,500ms,correct,0.43174405393074267
+mGCP-III,9999,2018-03-09_08:51,1,4,37_Caucasian_female_neutral_left.jpg,61_Caucasian_female_neutral_left.jpg,26_Caucasian_female_neutral_left.jpg,cue_left,target_F,target_right,cue_3,500ms,incorrect,0.47727962289354764
